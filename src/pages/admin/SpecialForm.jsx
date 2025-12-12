@@ -36,20 +36,30 @@ const SpecialForm = () => {
     if (isEditing) {
       const special = specials.find((s) => s.id === parseInt(id));
       if (special) {
+        // Handle both camelCase and snake_case from backend
+        const productIds = special.productIds || special.product_ids;
+        const categoryIds = special.categoryIds || special.category_ids;
+        const startDate = special.startDate || special.start_date;
+        const endDate = special.endDate || special.end_date;
+        const minPurchase = special.minPurchase || special.min_purchase;
+        const maxUses = special.maxUses || special.max_uses;
+        const buyQuantity = special.value?.buyQuantity || special.value?.buy_quantity;
+        const getQuantity = special.value?.getQuantity || special.value?.get_quantity;
+
         setFormData({
           name: special.name || '',
           description: special.description || '',
           type: special.type || 'discount_percentage',
           value: special.type === 'buy_x_get_y' ? '' : special.value?.toString() || '',
-          buyQuantity: special.type === 'buy_x_get_y' ? special.value?.buyQuantity?.toString() || '' : '',
-          getQuantity: special.type === 'buy_x_get_y' ? special.value?.getQuantity?.toString() || '' : '',
-          productIds: special.productIds || [],
-          categoryIds: special.categoryIds || [],
-          startDate: special.startDate?.split('T')[0] || '',
-          endDate: special.endDate?.split('T')[0] || '',
+          buyQuantity: special.type === 'buy_x_get_y' ? buyQuantity?.toString() || '' : '',
+          getQuantity: special.type === 'buy_x_get_y' ? getQuantity?.toString() || '' : '',
+          productIds: productIds || [],
+          categoryIds: categoryIds || [],
+          startDate: startDate?.split('T')[0] || '',
+          endDate: endDate?.split('T')[0] || '',
           active: special.active !== false,
-          minPurchase: special.minPurchase?.toString() || '',
-          maxUses: special.maxUses?.toString() || '',
+          minPurchase: minPurchase?.toString() || '',
+          maxUses: maxUses?.toString() || '',
           code: special.code || '',
           image: special.image ? [{ url: special.image, preview: special.image }] : [],
         });
@@ -119,25 +129,26 @@ const SpecialForm = () => {
     let value;
     if (formData.type === 'buy_x_get_y') {
       value = {
-        buyQuantity: parseInt(formData.buyQuantity),
-        getQuantity: parseInt(formData.getQuantity),
+        buy_quantity: parseInt(formData.buyQuantity),
+        get_quantity: parseInt(formData.getQuantity),
       };
     } else {
       value = parseFloat(formData.value);
     }
 
+    // Transform to snake_case for backend API
     const specialData = {
       name: formData.name,
       description: formData.description,
       type: formData.type,
       value,
-      productIds: formData.productIds,
-      categoryIds: formData.categoryIds,
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: new Date(formData.endDate + 'T23:59:59').toISOString(),
+      product_ids: formData.productIds,
+      category_ids: formData.categoryIds,
+      start_date: new Date(formData.startDate).toISOString(),
+      end_date: new Date(formData.endDate + 'T23:59:59').toISOString(),
       active: formData.active,
-      minPurchase: formData.minPurchase ? parseFloat(formData.minPurchase) : null,
-      maxUses: formData.maxUses ? parseInt(formData.maxUses) : null,
+      min_purchase: formData.minPurchase ? parseFloat(formData.minPurchase) : null,
+      max_uses: formData.maxUses ? parseInt(formData.maxUses) : null,
       code: formData.code || null,
       image: formData.image?.[0]?.url || formData.image?.[0]?.preview || null,
     };

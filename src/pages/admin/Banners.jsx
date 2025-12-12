@@ -46,17 +46,23 @@ const Banners = () => {
 
   const openEditModal = (banner) => {
     setEditingBanner(banner);
+    // Handle both camelCase and snake_case from backend
+    const startDate = banner.startDate || banner.start_date;
+    const endDate = banner.endDate || banner.end_date;
+    const displayLocation = banner.displayLocation || banner.display_location;
+    const linkText = banner.linkText || banner.link_text;
+
     setFormData({
       title: banner.title || '',
       message: banner.message || '',
       type: banner.type || 'info',
       dismissible: banner.dismissible !== false,
       active: banner.active !== false,
-      startDate: banner.startDate?.split('T')[0] || '',
-      endDate: banner.endDate?.split('T')[0] || '',
-      displayLocation: banner.displayLocation || 'site_wide',
+      startDate: startDate?.split('T')[0] || '',
+      endDate: endDate?.split('T')[0] || '',
+      displayLocation: displayLocation || 'site_wide',
       link: banner.link || '',
-      linkText: banner.linkText || '',
+      linkText: linkText || '',
     });
     setModalOpen(true);
   };
@@ -78,12 +84,18 @@ const Banners = () => {
     e.preventDefault();
     setSaving(true);
 
+    // Transform to snake_case for backend API
     const bannerData = {
-      ...formData,
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: new Date(formData.endDate + 'T23:59:59').toISOString(),
+      title: formData.title,
+      message: formData.message,
+      type: formData.type,
+      dismissible: formData.dismissible,
+      active: formData.active,
+      start_date: new Date(formData.startDate).toISOString(),
+      end_date: new Date(formData.endDate + 'T23:59:59').toISOString(),
+      display_location: formData.displayLocation,
       link: formData.link || null,
-      linkText: formData.linkText || null,
+      link_text: formData.linkText || null,
     };
 
     try {
@@ -101,7 +113,8 @@ const Banners = () => {
   };
 
   const handleToggleActive = async (banner) => {
-    await updateBanner(banner.id, { ...banner, active: !banner.active });
+    // Only send the active field for toggle
+    await updateBanner(banner.id, { active: !banner.active });
   };
 
   const handleDelete = async () => {
@@ -183,8 +196,10 @@ const Banners = () => {
           banners.map((banner) => {
             const typeColors = getTypeColor(banner.type);
             const now = new Date();
-            const start = new Date(banner.startDate);
-            const end = new Date(banner.endDate);
+            const startDate = banner.startDate || banner.start_date;
+            const endDate = banner.endDate || banner.end_date;
+            const start = new Date(startDate);
+            const end = new Date(endDate);
             const isActive = banner.active && now >= start && now <= end;
 
             return (
@@ -202,7 +217,7 @@ const Banners = () => {
                 </div>
                 <div className="banner-meta">
                   <span className="banner-dates">
-                    {formatDate(banner.startDate)} - {formatDate(banner.endDate)}
+                    {formatDate(startDate)} - {formatDate(endDate)}
                   </span>
                   <span className={`status-badge ${isActive ? 'active' : 'inactive'}`}>
                     {isActive ? 'Active' : 'Inactive'}

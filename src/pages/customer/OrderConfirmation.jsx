@@ -37,9 +37,10 @@ const OrderConfirmation = () => {
               headers: {
                 'Content-Type': 'application/json',
               },
+              // Transform to snake_case for backend API
               body: JSON.stringify({
-                sessionId,
-                customerId: isAuthenticated && user ? user.id : null,
+                session_id: sessionId,
+                customer_id: isAuthenticated && user ? user.id : null,
               }),
             }
           );

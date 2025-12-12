@@ -137,28 +137,29 @@ const Checkout = () => {
             quantity: item.quantity,
             image: item.images?.[0] || null,
           })),
-          customerInfo: {
+          // Transform to snake_case for backend API
+          customer_info: {
             email: formData.email,
             phone: formData.phone,
-            orderType: formData.orderType,
-            customerId: isAuthenticated && user ? user.id : null,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
+            order_type: formData.orderType,
+            customer_id: isAuthenticated && user ? user.id : null,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
             name: `${formData.firstName} ${formData.lastName}`.trim() || user?.firstName && `${user.firstName} ${user.lastName}`.trim(),
             ...(formData.orderType === 'pickup'
               ? {
-                  pickupDate: formData.pickupDate,
-                  pickupTime: formData.pickupTime,
+                  pickup_date: formData.pickupDate,
+                  pickup_time: formData.pickupTime,
                 }
               : {
-                  firstName: formData.firstName,
-                  lastName: formData.lastName,
+                  first_name: formData.firstName,
+                  last_name: formData.lastName,
                   address: formData.address,
                   apartment: formData.apartment,
                   city: formData.city,
                   state: formData.state,
-                  zipCode: formData.zipCode,
-                  deliveryInstructions: formData.deliveryInstructions,
+                  zip_code: formData.zipCode,
+                  delivery_instructions: formData.deliveryInstructions,
                 }),
           },
         }),

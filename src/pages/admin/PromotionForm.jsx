@@ -35,20 +35,29 @@ const PromotionForm = () => {
     if (isEditing) {
       const promotion = promotions.find((p) => p.id === parseInt(id));
       if (promotion) {
+        // Handle both camelCase and snake_case from backend
+        const buttonText = promotion.buttonText || promotion.button_text;
+        const buttonLink = promotion.buttonLink || promotion.button_link;
+        const backgroundColor = promotion.backgroundColor || promotion.background_color;
+        const textColor = promotion.textColor || promotion.text_color;
+        const startDate = promotion.startDate || promotion.start_date;
+        const endDate = promotion.endDate || promotion.end_date;
+        const displayLocation = promotion.displayLocation || promotion.display_location;
+
         setFormData({
           name: promotion.name || '',
           title: promotion.title || '',
           subtitle: promotion.subtitle || '',
           description: promotion.description || '',
-          buttonText: promotion.buttonText || '',
-          buttonLink: promotion.buttonLink || '',
+          buttonText: buttonText || '',
+          buttonLink: buttonLink || '',
           image: promotion.image ? [{ url: promotion.image, preview: promotion.image }] : [],
-          backgroundColor: promotion.backgroundColor || '#f8e8d4',
-          textColor: promotion.textColor || '#5c3d2e',
-          startDate: promotion.startDate?.split('T')[0] || '',
-          endDate: promotion.endDate?.split('T')[0] || '',
+          backgroundColor: backgroundColor || '#f8e8d4',
+          textColor: textColor || '#5c3d2e',
+          startDate: startDate?.split('T')[0] || '',
+          endDate: endDate?.split('T')[0] || '',
           active: promotion.active !== false,
-          displayLocation: promotion.displayLocation || 'homepage_hero',
+          displayLocation: displayLocation || 'homepage_hero',
           order: promotion.order || 1,
         });
       }
@@ -101,11 +110,21 @@ const PromotionForm = () => {
 
     setSaving(true);
 
+    // Transform to snake_case for backend API
     const promotionData = {
-      ...formData,
+      name: formData.name,
+      title: formData.title,
+      subtitle: formData.subtitle,
+      description: formData.description,
+      button_text: formData.buttonText,
+      button_link: formData.buttonLink,
       image: formData.image?.[0]?.url || formData.image?.[0]?.preview || null,
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: new Date(formData.endDate + 'T23:59:59').toISOString(),
+      background_color: formData.backgroundColor,
+      text_color: formData.textColor,
+      start_date: new Date(formData.startDate).toISOString(),
+      end_date: new Date(formData.endDate + 'T23:59:59').toISOString(),
+      active: formData.active,
+      display_location: formData.displayLocation,
       order: parseInt(formData.order),
     };
 

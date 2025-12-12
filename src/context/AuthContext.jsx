@@ -108,7 +108,14 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, firstName, lastName, phone }),
+        // Transform to snake_case for backend API
+        body: JSON.stringify({
+          email,
+          password,
+          first_name: firstName,
+          last_name: lastName,
+          phone,
+        }),
       });
 
       const data = await response.json();
@@ -141,6 +148,13 @@ export const AuthProvider = ({ children }) => {
 
     setError(null);
 
+    // Transform to snake_case for backend API
+    const snakeCaseUpdates = {};
+    if (updates.firstName !== undefined) snakeCaseUpdates.first_name = updates.firstName;
+    if (updates.lastName !== undefined) snakeCaseUpdates.last_name = updates.lastName;
+    if (updates.email !== undefined) snakeCaseUpdates.email = updates.email;
+    if (updates.phone !== undefined) snakeCaseUpdates.phone = updates.phone;
+
     try {
       const response = await fetch(`${API_URL}/customers/me`, {
         method: 'PUT',
@@ -148,7 +162,7 @@ export const AuthProvider = ({ children }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(snakeCaseUpdates),
       });
 
       const data = await response.json();
@@ -180,7 +194,11 @@ export const AuthProvider = ({ children }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ currentPassword, newPassword }),
+        // Transform to snake_case for backend API
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
       });
 
       const data = await response.json();
