@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShoppingBag, CreditCard, Truck, ArrowLeft, Lock, Minus, Plus, Trash2 } from 'lucide-react';
+import { ShoppingBag, CreditCard, Truck, ArrowLeft, Lock, Minus, Plus, Trash2, Tag, X, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
@@ -45,6 +45,61 @@ const Checkout = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  // Promo code state
+  const [promoCode, setPromoCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [discount, setDiscount] = useState(0);
+
+  // Apply promo code
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+
+    setPromoLoading(true);
+    setPromoError('');
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/specials/validate-code`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: promoCode.trim().toUpperCase(),
+            subtotal: subtotal,
+            items: items.map((item) => ({ id: item.id, quantity: item.quantity })),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.valid) {
+        setAppliedPromo(data.special);
+        setDiscount(data.discount);
+        setPromoError('');
+      } else {
+        setPromoError(data.error || 'Invalid promo code');
+        setAppliedPromo(null);
+        setDiscount(0);
+      }
+    } catch (error) {
+      console.error('Promo code error:', error);
+      setPromoError('Failed to validate promo code');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  // Remove applied promo
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setDiscount(0);
+    setPromoCode('');
+    setPromoError('');
+  };
 
   // Pre-fill form with user data if logged in
   useEffect(() => {
@@ -137,6 +192,9 @@ const Checkout = () => {
             quantity: item.quantity,
             image: item.images?.[0] || null,
           })),
+          // Promo code info
+          promo_code: appliedPromo?.code || null,
+          discount: discount,
           // Transform to snake_case for backend API
           customer_info: {
             email: formData.email,
@@ -546,11 +604,57 @@ const Checkout = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Promo Code Section */}
+              <div className="promo-code-section">
+                <h4><Tag size={16} /> Promo Code</h4>
+                {appliedPromo ? (
+                  <div className="promo-applied">
+                    <div className="promo-applied-info">
+                      <Check size={16} />
+                      <span>{appliedPromo.code || appliedPromo.name}</span>
+                    </div>
+                    <button
+                      className="promo-remove-btn"
+                      onClick={handleRemovePromo}
+                      title="Remove promo code"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="promo-input-wrapper">
+                    <input
+                      type="text"
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                      className="promo-input"
+                    />
+                    <button
+                      className="promo-apply-btn"
+                      onClick={handleApplyPromo}
+                      disabled={promoLoading || !promoCode.trim()}
+                    >
+                      {promoLoading ? '...' : 'Apply'}
+                    </button>
+                  </div>
+                )}
+                {promoError && <p className="promo-error">{promoError}</p>}
+              </div>
+
               <div className="summary-totals">
                 <div className="summary-row">
                   <span>Subtotal ({itemCount} items)</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="summary-row discount">
+                    <span>Discount</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
                 <div className="summary-row">
                   <span>Tax</span>
                   <span>{formatPrice(tax)}</span>
@@ -564,7 +668,7 @@ const Checkout = () => {
                 <div className="summary-row total">
                   <span>Total</span>
                   <span>
-                    {formatPrice(total + (formData.orderType === 'delivery' ? 5 : 0))}
+                    {formatPrice(total - discount + (formData.orderType === 'delivery' ? 5 : 0))}
                   </span>
                 </div>
               </div>

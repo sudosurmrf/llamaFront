@@ -7,9 +7,9 @@ import './Home.css';
 const Home = () => {
   const { featuredProducts, activePromotions, categories } = useBakery();
 
-  // Get hero promotions for the slider
+  // Get hero promotions for the slider (handle both camelCase and snake_case from backend)
   const heroPromotions = activePromotions.filter(
-    (p) => p.displayLocation === 'homepage_hero'
+    (p) => (p.displayLocation || p.display_location) === 'homepage_hero'
   );
 
   // Transform promotions to slider format
@@ -19,11 +19,11 @@ const Home = () => {
         title: promo.title,
         subtitle: promo.subtitle,
         description: promo.description,
-        buttonText: promo.buttonText,
-        buttonLink: promo.buttonLink,
+        buttonText: promo.buttonText || promo.button_text,
+        buttonLink: promo.buttonLink || promo.button_link,
         image: promo.image,
-        backgroundColor: promo.backgroundColor,
-        textColor: promo.textColor,
+        backgroundColor: promo.backgroundColor || promo.background_color,
+        textColor: promo.textColor || promo.text_color,
       }))
     : [
         {
@@ -108,8 +108,6 @@ const Home = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                onViewDetails={() => {}}
-                onAddToCart={() => {}}
               />
             ))}
           </div>
