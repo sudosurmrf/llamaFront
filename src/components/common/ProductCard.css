@@ -1,0 +1,283 @@
+.product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(92, 61, 46, 0.12);
+}
+
+.product-card-image {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background-color: #f8e8d4;
+}
+
+.product-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-card-image img {
+  transform: scale(1.05);
+}
+
+.product-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #a18072;
+}
+
+.product-card-placeholder span {
+  font-size: 0.875rem;
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-badge-featured {
+  background-color: #5c3d2e;
+  color: white;
+}
+
+.product-badge-sale {
+  background-color: #dc2626;
+  color: white;
+  left: auto;
+  right: 12px;
+}
+
+.product-card-actions {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.product-card-actions.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.action-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: white;
+  color: #5c3d2e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:hover {
+  background-color: #5c3d2e;
+  color: white;
+  transform: scale(1.1);
+}
+
+.action-btn.active {
+  color: #dc2626;
+}
+
+.action-btn.active:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+.action-btn.cart-btn.added {
+  background-color: #22c55e;
+  color: white;
+}
+
+/* Cart quantity control in action buttons */
+.cart-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: auto;
+  padding: 4px;
+  border-radius: 20px;
+}
+
+.cart-qty-control button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.cart-qty-control button:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.cart-qty-control .qty-display {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Added feedback overlay */
+.added-feedback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(34, 197, 94, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  gap: 8px;
+  animation: fadeInOut 1.5s ease;
+  pointer-events: none;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.product-card-content {
+  padding: 1.25rem;
+}
+
+.product-card-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #5c3d2e;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+}
+
+.product-card-description {
+  font-size: 0.875rem;
+  color: #7a5240;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-card-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #5c3d2e;
+}
+
+.product-card-original-price {
+  font-size: 0.875rem;
+  color: #a18072;
+  text-decoration: line-through;
+}
+
+.product-card-allergens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0.75rem;
+}
+
+.allergen-tag {
+  font-size: 0.6875rem;
+  padding: 4px 8px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+/* Add to cart button at bottom */
+.product-add-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  border: 2px solid #5c3d2e;
+  background-color: transparent;
+  color: #5c3d2e;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.product-add-btn:hover {
+  background-color: #5c3d2e;
+  color: white;
+}
+
+.product-add-btn.in-cart {
+  background-color: #22c55e;
+  border-color: #22c55e;
+  color: white;
+  cursor: default;
+}
+
+.product-add-btn.in-cart:hover {
+  background-color: #16a34a;
+  border-color: #16a34a;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .product-card-actions {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

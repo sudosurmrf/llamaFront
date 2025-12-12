@@ -1,0 +1,10 @@
+export { default as Dashboard } from './Dashboard';
+export { default as Products } from './Products';
+export { default as ProductForm } from './ProductForm';
+export { default as Categories } from './Categories';
+export { default as Specials } from './Specials';
+export { default as SpecialForm } from './SpecialForm';
+export { default as Promotions } from './Promotions';
+export { default as PromotionForm } from './PromotionForm';
+export { default as Banners } from './Banners';
+export { default as Settings } from './Settings';

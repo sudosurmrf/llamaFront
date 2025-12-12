@@ -1,0 +1,388 @@
+.dashboard-page {
+  max-width: 1200px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #5c3d2e;
+  margin: 0 0 0.25rem;
+}
+
+.page-subtitle {
+  font-size: 0.9375rem;
+  color: #7a5240;
+  margin: 0;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(92, 61, 46, 0.06);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #5c3d2e;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #7a5240;
+  margin-top: 4px;
+}
+
+.stat-change {
+  font-size: 0.75rem;
+  margin-top: 8px;
+}
+
+.stat-change.positive {
+  color: #16a34a;
+}
+
+.stat-change.warning {
+  color: #d97706;
+}
+
+.stat-change.negative {
+  color: #dc2626;
+}
+
+/* Quick Actions */
+.quick-actions-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #5c3d2e;
+  margin: 0 0 1rem;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 1.25rem;
+  background-color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #5c3d2e;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(92, 61, 46, 0.06);
+}
+
+.quick-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.12);
+}
+
+.action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #f8e8d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-arrow {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.quick-action-card:hover .action-arrow {
+  opacity: 1;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.recent-section,
+.promotions-section {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(92, 61, 46, 0.06);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.view-all-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #5c3d2e;
+  text-decoration: none;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Recent Products List */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0e5d8;
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+.item-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f8e8d4;
+  flex-shrink: 0;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a18072;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #5c3d2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-category {
+  font-size: 0.75rem;
+  color: #7a5240;
+}
+
+.item-price {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+/* Promotions List */
+.promo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.promo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #fdfbf9;
+  border-radius: 8px;
+}
+
+.promo-color {
+  width: 8px;
+  height: 40px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.promo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.promo-name {
+  display: block;
+  font-size: 0.75rem;
+  color: #7a5240;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.promo-title {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #5c3d2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.promo-status {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #f0e5d8;
+  color: #7a5240;
+}
+
+.promo-status.active {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #a18072;
+}
+
+.empty-state svg {
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0 0 8px;
+}
+
+.empty-state a {
+  color: #5c3d2e;
+  font-weight: 500;
+}
+
+/* Activity Section */
+.activity-section {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(92, 61, 46, 0.06);
+}
+
+.activity-placeholder {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #a18072;
+}
+
+.activity-placeholder svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.activity-placeholder p {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: #5c3d2e;
+}
+
+.activity-placeholder span {
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

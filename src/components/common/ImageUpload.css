@@ -1,0 +1,136 @@
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-upload-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #5c3d2e;
+}
+
+.image-upload-dropzone {
+  border: 2px dashed #e5d5c5;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fdfbf9;
+}
+
+.image-upload-dropzone:hover,
+.image-upload-dropzone.active {
+  border-color: #5c3d2e;
+  background-color: #f8e8d4;
+}
+
+.image-upload-dropzone.error {
+  border-color: #dc2626;
+}
+
+.image-upload-input {
+  display: none;
+}
+
+.image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #7a5240;
+}
+
+.image-upload-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.image-upload-hint {
+  font-size: 0.75rem;
+  color: #a18072;
+}
+
+.image-upload-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #5c3d2e;
+}
+
+.image-upload-loading .spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.image-upload-error {
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+.image-upload-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f8e8d4;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a18072;
+}
+
+.preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(220, 38, 38, 0.9);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.preview-remove:hover {
+  background-color: #dc2626;
+  transform: scale(1.1);
+}
+
+.image-upload-count {
+  font-size: 0.75rem;
+  color: #7a5240;
+  text-align: right;
+}
