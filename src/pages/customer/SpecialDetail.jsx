@@ -52,9 +52,54 @@ const SpecialDetail = () => {
     fetchSpecial();
   }, [id]);
 
-  // Get qualifying products for this special
+  // Get buy and get products for buy_x_get_y promos
+  const { buyProducts, getProducts, isTwoPartPromo } = useMemo(() => {
+    if (!special || !products.length) {
+      return { buyProducts: [], getProducts: [], isTwoPartPromo: false };
+    }
+
+    const value = special.value || {};
+    const buyCategoryIds = value.buy_category_ids || value.buyCategoryIds || [];
+    const buyProductIds = value.buy_product_ids || value.buyProductIds || [];
+    const getCategoryIds = value.get_category_ids || value.getCategoryIds || [];
+    const getProductIds = value.get_product_ids || value.getProductIds || [];
+
+    // Check if this is a two-part promo (separate buy and get categories)
+    const hasSeparateBuyGet = buyCategoryIds.length > 0 || buyProductIds.length > 0 ||
+                              getCategoryIds.length > 0 || getProductIds.length > 0;
+
+    if (special.type === 'buy_x_get_y' && hasSeparateBuyGet) {
+      // Get buy products
+      let buyProds = [];
+      if (buyProductIds.length > 0) {
+        buyProds = products.filter((p) => buyProductIds.includes(p.id) && p.active);
+      } else if (buyCategoryIds.length > 0) {
+        buyProds = products.filter((p) => {
+          const pCategoryId = p.category_id || p.categoryId;
+          return buyCategoryIds.includes(pCategoryId) && p.active;
+        });
+      }
+
+      // Get free products
+      let getProds = [];
+      if (getProductIds.length > 0) {
+        getProds = products.filter((p) => getProductIds.includes(p.id) && p.active);
+      } else if (getCategoryIds.length > 0) {
+        getProds = products.filter((p) => {
+          const pCategoryId = p.category_id || p.categoryId;
+          return getCategoryIds.includes(pCategoryId) && p.active;
+        });
+      }
+
+      return { buyProducts: buyProds, getProducts: getProds, isTwoPartPromo: true };
+    }
+
+    return { buyProducts: [], getProducts: [], isTwoPartPromo: false };
+  }, [special, products]);
+
+  // Get qualifying products for this special (fallback for non two-part promos)
   const qualifyingProducts = useMemo(() => {
-    if (!special || !products.length) return [];
+    if (!special || !products.length || isTwoPartPromo) return [];
 
     const productIds = special.product_ids || special.productIds || [];
     const categoryIds = special.category_ids || special.categoryIds || [];
@@ -72,18 +117,47 @@ const SpecialDetail = () => {
 
     // If no specific products/categories, all active products qualify
     return products.filter((p) => p.active);
-  }, [special, products]);
+  }, [special, products, isTwoPartPromo]);
 
-  // Calculate qualifying items in cart
+  // Calculate buy items in cart (for two-part promos)
+  const buyCartInfo = useMemo(() => {
+    if (!special || !cartItems.length || !isTwoPartPromo) return { count: 0, items: [] };
+
+    const buyIds = buyProducts.map((p) => p.id);
+    const buyItems = cartItems.filter((item) => buyIds.includes(item.id));
+    const count = buyItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    return { count, items: buyItems };
+  }, [special, cartItems, buyProducts, isTwoPartPromo]);
+
+  // Calculate qualifying items in cart (for non two-part promos)
   const qualifyingCartInfo = useMemo(() => {
-    if (!special || !cartItems.length) return { count: 0, items: [] };
+    if (!special || !cartItems.length || isTwoPartPromo) return { count: 0, items: [] };
 
     const qualifyingIds = qualifyingProducts.map((p) => p.id);
     const qualifyingItems = cartItems.filter((item) => qualifyingIds.includes(item.id));
     const count = qualifyingItems.reduce((sum, item) => sum + item.quantity, 0);
 
     return { count, items: qualifyingItems };
-  }, [special, cartItems, qualifyingProducts]);
+  }, [special, cartItems, qualifyingProducts, isTwoPartPromo]);
+
+  // Get category names for display
+  const categoryNames = useMemo(() => {
+    if (!special || !categories.length) return { buyCategories: [], getCategories: [] };
+
+    const value = special.value || {};
+    const buyCategoryIds = value.buy_category_ids || value.buyCategoryIds || [];
+    const getCategoryIds = value.get_category_ids || value.getCategoryIds || [];
+
+    const buyCategories = categories
+      .filter((c) => buyCategoryIds.includes(c.id))
+      .map((c) => c.name);
+    const getCategories = categories
+      .filter((c) => getCategoryIds.includes(c.id))
+      .map((c) => c.name);
+
+    return { buyCategories, getCategories };
+  }, [special, categories]);
 
   // Get special type info
   const getSpecialInfo = () => {
@@ -104,25 +178,38 @@ const SpecialDetail = () => {
         };
 
       case 'buy_x_get_y': {
-        const buyQty = value?.buy_quantity || value?.buyQuantity || 2;
+        const buyQty = value?.buy_quantity || value?.buyQuantity || 1;
         const getQty = value?.get_quantity || value?.getQuantity || 1;
-        const progress = qualifyingCartInfo.count;
+
+        // Use buyCartInfo for two-part promos, qualifyingCartInfo for simple promos
+        const progress = isTwoPartPromo ? buyCartInfo.count : qualifyingCartInfo.count;
         const remaining = Math.max(0, buyQty - progress);
+
+        // Build description based on whether it's a two-part promo
+        let description = `Add ${buyQty} qualifying items to your cart and get ${getQty} item(s) FREE at checkout!`;
+        if (isTwoPartPromo && categoryNames.buyCategories.length > 0 && categoryNames.getCategories.length > 0) {
+          description = `Buy ${buyQty} ${categoryNames.buyCategories.join(' or ')} and get ${getQty} FREE ${categoryNames.getCategories.join(' or ')}!`;
+        }
 
         return {
           icon: Gift,
           label: `Buy ${buyQty}, Get ${getQty} Free`,
-          description: `Add ${buyQty} qualifying items to your cart and get ${getQty} item(s) FREE at checkout!`,
-          requirement: `${buyQty} qualifying items required`,
+          description,
+          requirement: isTwoPartPromo
+            ? `Purchase ${buyQty} ${categoryNames.buyCategories.join(' or ') || 'qualifying item(s)'}`
+            : `${buyQty} qualifying items required`,
           progress: {
             current: progress,
             required: buyQty,
             remaining,
             message:
               remaining > 0
-                ? `Add ${remaining} more item(s) to qualify!`
-                : `You qualify for ${getQty} FREE item(s)!`,
+                ? isTwoPartPromo
+                  ? `Add ${remaining} more ${categoryNames.buyCategories.join(' or ') || 'item(s)'} to qualify!`
+                  : `Add ${remaining} more item(s) to qualify!`
+                : `You qualify for ${getQty} FREE ${categoryNames.getCategories.join(' or ') || 'item(s)'}!`,
           },
+          isTwoPartPromo,
         };
       }
 
@@ -285,30 +372,118 @@ const SpecialDetail = () => {
           )}
         </div>
 
-        {/* Qualifying Products */}
-        <section className="qualifying-products">
-          <h2 className="section-title">
-            {qualifyingProducts.length > 0
-              ? 'Qualifying Items'
-              : 'Browse Our Products'}
-          </h2>
-          {qualifyingProducts.length > 0 ? (
-            <div className="products-grid">
-              {qualifyingProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+        {/* Two-Part Promo: Buy Products Section */}
+        {isTwoPartPromo && (
+          <>
+            <section className="qualifying-products buy-products-section">
+              <div className="section-header">
+                <span className="step-badge">Step 1</span>
+                <h2 className="section-title">
+                  Buy {categoryNames.buyCategories.join(' or ') || 'Qualifying Items'}
+                </h2>
+                <p className="section-subtitle">
+                  Add {special.value?.buy_quantity || special.value?.buyQuantity || 1} item(s) from this section to your cart
+                </p>
+              </div>
+              {buyProducts.length > 0 ? (
+                <div className="products-grid">
+                  {buyProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              ) : (
+                <div className="no-products">
+                  <ShoppingBag size={48} />
+                  <p>No products available in this category</p>
+                </div>
+              )}
+            </section>
+
+            <section className="qualifying-products get-products-section">
+              <div className="section-header">
+                <span className="step-badge step-badge-free">Step 2</span>
+                <h2 className="section-title">
+                  Get FREE {categoryNames.getCategories.join(' or ') || 'Items'}
+                </h2>
+                <p className="section-subtitle">
+                  {specialInfo?.progress?.remaining === 0
+                    ? `You'll get ${special.value?.get_quantity || special.value?.getQuantity || 1} item(s) FREE from this section!`
+                    : `Complete Step 1 to choose your ${special.value?.get_quantity || special.value?.getQuantity || 1} FREE item(s)`}
+                </p>
+              </div>
+              {getProducts.length > 0 ? (
+                <div className={`products-grid ${specialInfo?.progress?.remaining > 0 ? 'dimmed' : ''}`}>
+                  {getProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              ) : (
+                <div className="no-products">
+                  <Gift size={48} />
+                  <p>Free items will be selected at checkout</p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
+        {/* Regular Qualifying Products (non two-part promos) */}
+        {!isTwoPartPromo && (
+          <section className="qualifying-products">
+            <h2 className="section-title">
+              {qualifyingProducts.length > 0
+                ? 'Qualifying Items'
+                : 'Browse Our Products'}
+            </h2>
+            {qualifyingProducts.length > 0 ? (
+              <div className="products-grid">
+                {qualifyingProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="no-products">
+                <ShoppingBag size={48} />
+                <p>All products qualify for this special!</p>
+                <Button onClick={() => navigate('/menu')}>Browse Menu</Button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Cart Summary for two-part promo */}
+        {isTwoPartPromo && buyCartInfo.count > 0 && (
+          <div className="special-cart-summary">
+            <h3>
+              <ShoppingBag size={20} />
+              {categoryNames.buyCategories.join(' / ') || 'Qualifying Items'} in Your Cart
+            </h3>
+            <div className="cart-items-list">
+              {buyCartInfo.items.map((item) => (
+                <div key={item.id} className="cart-item-row">
+                  <span className="cart-item-qty">{item.quantity}x</span>
+                  <span className="cart-item-name">{item.name}</span>
+                  <span className="cart-item-price">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
               ))}
             </div>
-          ) : (
-            <div className="no-products">
-              <ShoppingBag size={48} />
-              <p>All products qualify for this special!</p>
-              <Button onClick={() => navigate('/menu')}>Browse Menu</Button>
+            <div className="cart-summary-footer">
+              <span>
+                {buyCartInfo.count} / {special.value?.buy_quantity || special.value?.buyQuantity || 1} required item(s) in cart
+              </span>
+              {specialInfo?.progress?.remaining === 0 && (
+                <Button variant="primary" onClick={() => navigate('/checkout')}>
+                  Proceed to Select Free Items
+                </Button>
+              )}
             </div>
-          )}
-        </section>
+          </div>
+        )}
 
-        {/* Cart Summary for this special */}
-        {qualifyingCartInfo.count > 0 && (
+        {/* Cart Summary for regular promo */}
+        {!isTwoPartPromo && qualifyingCartInfo.count > 0 && (
           <div className="special-cart-summary">
             <h3>
               <ShoppingBag size={20} />

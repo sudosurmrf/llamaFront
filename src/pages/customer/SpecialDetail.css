@@ -268,7 +268,64 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #5c3d2e;
-  margin: 0 0 2rem;
+  margin: 0 0 0.5rem;
+}
+
+/* Two-Part Promo Sections */
+.section-header {
+  margin-bottom: 2rem;
+}
+
+.step-badge {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.step-badge-free {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: #7a5240;
+  margin: 0;
+}
+
+.buy-products-section {
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.08);
+}
+
+.get-products-section {
+  padding: 2rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  border: 2px dashed #22c55e;
+}
+
+.get-products-section .section-title {
+  color: #166534;
+}
+
+.get-products-section .section-subtitle {
+  color: #15803d;
+}
+
+.products-grid.dimmed {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 /* Products Grid */

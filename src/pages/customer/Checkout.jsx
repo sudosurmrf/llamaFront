@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { FreeItemsModal } from '../../components/common';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -54,9 +55,15 @@ const Checkout = () => {
   const [discount, setDiscount] = useState(0);
   const [freeItems, setFreeItems] = useState([]);
   const [promoNeedsMoreItems, setPromoNeedsMoreItems] = useState(null);
+  const [selectedFreeItems, setSelectedFreeItems] = useState([]);
+
+  // Free items modal state
+  const [showFreeItemsModal, setShowFreeItemsModal] = useState(false);
+  const [availableFreeProducts, setAvailableFreeProducts] = useState([]);
+  const [totalFreeQty, setTotalFreeQty] = useState(0);
 
   // Apply promo code
-  const handleApplyPromo = async () => {
+  const handleApplyPromo = async (freeItemSelections = null) => {
     if (!promoCode.trim()) return;
 
     setPromoLoading(true);
@@ -73,6 +80,7 @@ const Checkout = () => {
             code: promoCode.trim().toUpperCase(),
             subtotal: subtotal,
             items: items.map((item) => ({ id: item.id, quantity: item.quantity, price: item.price })),
+            selectedFreeItems: freeItemSelections || selectedFreeItems,
           }),
         }
       );
@@ -80,17 +88,31 @@ const Checkout = () => {
       const data = await response.json();
 
       if (data.valid) {
-        setAppliedPromo(data.special);
-        setDiscount(data.discount);
-        setFreeItems(data.freeItems || []);
-        setPromoError('');
-        setPromoNeedsMoreItems(null);
+        // Check if this is a buy_x_get_y promo that needs item selection
+        if (data.buyConditionMet && data.needsSelection) {
+          // Show modal for user to select their free items
+          setAvailableFreeProducts(data.getProducts || []);
+          setTotalFreeQty(data.totalFreeQty || 0);
+          setAppliedPromo(data.special);
+          setShowFreeItemsModal(true);
+          setPromoError('');
+          setPromoNeedsMoreItems(null);
+        } else {
+          // Standard promo or buy_x_get_y with selections already made
+          setAppliedPromo(data.special);
+          setDiscount(data.discount || 0);
+          setFreeItems(data.freeItems || []);
+          setPromoError('');
+          setPromoNeedsMoreItems(null);
+          setShowFreeItemsModal(false);
+        }
       } else if (data.requiresMoreItems) {
-        // Special case: promo is valid but needs more items
+        // Special case: promo is valid but needs more buy items
         setPromoNeedsMoreItems({
           special: data.special,
           itemsNeeded: data.itemsNeeded,
-          qualifyingProducts: data.qualifyingProducts,
+          buyProducts: data.buyProducts,
+          getProducts: data.getProducts,
         });
         setPromoError(data.error);
         setAppliedPromo(null);
@@ -110,6 +132,14 @@ const Checkout = () => {
     }
   };
 
+  // Handle free item selections from modal
+  const handleFreeItemsConfirm = async (selections) => {
+    setSelectedFreeItems(selections);
+    setShowFreeItemsModal(false);
+    // Re-validate with the selections to get the discount
+    await handleApplyPromo(selections);
+  };
+
   // Remove applied promo
   const handleRemovePromo = () => {
     setAppliedPromo(null);
@@ -118,6 +148,9 @@ const Checkout = () => {
     setPromoCode('');
     setPromoError('');
     setPromoNeedsMoreItems(null);
+    setSelectedFreeItems([]);
+    setAvailableFreeProducts([]);
+    setTotalFreeQty(0);
   };
 
   // Pre-fill form with user data if logged in
@@ -718,6 +751,16 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+
+      {/* Free Items Selection Modal */}
+      <FreeItemsModal
+        isOpen={showFreeItemsModal}
+        onClose={() => setShowFreeItemsModal(false)}
+        onConfirm={handleFreeItemsConfirm}
+        availableProducts={availableFreeProducts}
+        totalFreeQty={totalFreeQty}
+        specialName={appliedPromo?.name || 'Special Offer'}
+      />
     </div>
   );
 };

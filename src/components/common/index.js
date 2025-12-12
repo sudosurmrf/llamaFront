@@ -9,3 +9,4 @@ export { default as ImageUpload } from './ImageUpload';
 export { default as Loading } from './Loading';
 export { default as DataTable } from './DataTable';
 export { default as SiteBanner } from './SiteBanner';
+export { default as FreeItemsModal } from './FreeItemsModal';
