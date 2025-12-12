@@ -38,22 +38,26 @@ const ProductForm = () => {
     if (isEditing) {
       const product = products.find((p) => p.id === parseInt(id));
       if (product) {
+        // Handle both camelCase and snake_case from backend
+        const categoryId = product.categoryId || product.category_id;
+        const nutritionInfo = product.nutritionInfo || product.nutrition_info;
+
         setFormData({
           name: product.name || '',
           slug: product.slug || '',
           description: product.description || '',
           price: product.price?.toString() || '',
-          categoryId: product.categoryId?.toString() || '',
+          categoryId: categoryId?.toString() || '',
           images: product.images?.map((url) => ({ url, preview: url })) || [],
           featured: product.featured || false,
           active: product.active !== false,
           allergens: product.allergens?.join(', ') || '',
           ingredients: product.ingredients || '',
           nutritionInfo: {
-            calories: product.nutritionInfo?.calories?.toString() || '',
-            fat: product.nutritionInfo?.fat?.toString() || '',
-            carbs: product.nutritionInfo?.carbs?.toString() || '',
-            protein: product.nutritionInfo?.protein?.toString() || '',
+            calories: nutritionInfo?.calories?.toString() || '',
+            fat: nutritionInfo?.fat?.toString() || '',
+            carbs: nutritionInfo?.carbs?.toString() || '',
+            protein: nutritionInfo?.protein?.toString() || '',
           },
           servings: product.servings || '',
         });
@@ -134,16 +138,23 @@ const ProductForm = () => {
 
     setSaving(true);
 
+    // Transform to snake_case for backend API
     const productData = {
-      ...formData,
+      name: formData.name,
+      slug: formData.slug,
+      description: formData.description,
       price: parseFloat(formData.price),
-      categoryId: parseInt(formData.categoryId),
+      category_id: parseInt(formData.categoryId),
+      featured: formData.featured,
+      active: formData.active,
       allergens: formData.allergens
         .split(',')
         .map((a) => a.trim().toLowerCase())
         .filter(Boolean),
-      images: formData.images.map((img) => img.url || img.preview),
-      nutritionInfo: {
+      ingredients: formData.ingredients,
+      servings: formData.servings,
+      existingImages: formData.images.map((img) => img.url || img.preview),
+      nutrition_info: {
         calories: formData.nutritionInfo.calories ? parseInt(formData.nutritionInfo.calories) : null,
         fat: formData.nutritionInfo.fat ? parseFloat(formData.nutritionInfo.fat) : null,
         carbs: formData.nutritionInfo.carbs ? parseFloat(formData.nutritionInfo.carbs) : null,
