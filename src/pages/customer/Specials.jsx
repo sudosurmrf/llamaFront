@@ -1,9 +1,11 @@
-import { Tag, Percent, Gift, Calendar, Clock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Tag, Percent, Gift, Calendar, Clock, ArrowRight, ShoppingBag } from 'lucide-react';
 import { Button, ProductCard } from '../../components/common';
 import { useBakery } from '../../context/BakeryContext';
 import './Specials.css';
 
 const Specials = () => {
+  const navigate = useNavigate();
   const { activeSpecials, activePromotions, products } = useBakery();
 
   const getSpecialIcon = (type) => {
@@ -28,16 +30,20 @@ const Specials = () => {
         // value is a number (e.g., 20 for 20% off)
         return `${typeof value === 'object' ? value.percentage || value : value}% OFF`;
       case 'buy_x_get_y':
-        // value is { buyQuantity, getQuantity }
-        if (typeof value === 'object' && value.buyQuantity && value.getQuantity) {
-          return `Buy ${value.buyQuantity}, Get ${value.getQuantity} Free`;
+        // value is { buyQuantity/buy_quantity, getQuantity/get_quantity }
+        if (typeof value === 'object') {
+          const buyQty = value.buyQuantity || value.buy_quantity;
+          const getQty = value.getQuantity || value.get_quantity;
+          if (buyQty && getQty) {
+            return `Buy ${buyQty}, Get ${getQty} Free`;
+          }
         }
         return 'Buy More, Get Free';
       case 'bundle_discount':
         // value is { freeItem, freeQuantity, minPurchase } or a discount amount
         if (typeof value === 'object') {
-          if (value.freeItem) {
-            return `Free ${value.freeQuantity || ''} ${value.freeItem}`;
+          if (value.freeItem || value.free_item) {
+            return `Free ${value.freeQuantity || value.free_quantity || ''} ${value.freeItem || value.free_item}`;
           }
           return `$${value.discount || value.amount || 0} OFF Bundle`;
         }
@@ -58,11 +64,12 @@ const Specials = () => {
     });
   };
 
-  // Get products that are on special
+  // Get products that are on special (handle both camelCase and snake_case)
   const specialProducts = products.filter((product) =>
-    activeSpecials.some((special) =>
-      special.productIds?.includes(product.id)
-    )
+    activeSpecials.some((special) => {
+      const productIds = special.productIds || special.product_ids || [];
+      return productIds.includes(product.id);
+    })
   );
 
   return (
@@ -84,44 +91,52 @@ const Specials = () => {
           <div className="container">
             <h2 className="section-title">Current Promotions</h2>
             <div className="promotions-grid">
-              {activePromotions.map((promo) => (
-                <div
-                  key={promo.id}
-                  className="promo-card"
-                  style={{
-                    backgroundColor: promo.backgroundColor || '#f8e8d4',
-                    color: promo.textColor || '#5c3d2e',
-                  }}
-                >
-                  <div className="promo-content">
-                    {promo.subtitle && (
-                      <span className="promo-label">{promo.subtitle}</span>
-                    )}
-                    <h3 className="promo-title">{promo.title}</h3>
-                    {promo.description && (
-                      <p className="promo-description">{promo.description}</p>
-                    )}
-                    <div className="promo-footer">
-                      <div className="promo-dates">
-                        <Calendar size={14} />
-                        <span>
-                          Until {formatDate(promo.endDate)}
-                        </span>
-                      </div>
-                      {promo.buttonText && (
-                        <a href={promo.buttonLink || '/menu'} className="promo-button">
-                          {promo.buttonText}
-                        </a>
+              {activePromotions.map((promo) => {
+                const bgColor = promo.backgroundColor || promo.background_color || '#f8e8d4';
+                const txtColor = promo.textColor || promo.text_color || '#5c3d2e';
+                const endDate = promo.endDate || promo.end_date;
+                const btnText = promo.buttonText || promo.button_text;
+                const btnLink = promo.buttonLink || promo.button_link || '/menu';
+
+                return (
+                  <div
+                    key={promo.id}
+                    className="promo-card"
+                    style={{
+                      backgroundColor: bgColor,
+                      color: txtColor,
+                    }}
+                  >
+                    <div className="promo-content">
+                      {promo.subtitle && (
+                        <span className="promo-label">{promo.subtitle}</span>
                       )}
+                      <h3 className="promo-title">{promo.title}</h3>
+                      {promo.description && (
+                        <p className="promo-description">{promo.description}</p>
+                      )}
+                      <div className="promo-footer">
+                        <div className="promo-dates">
+                          <Calendar size={14} />
+                          <span>
+                            Until {formatDate(endDate)}
+                          </span>
+                        </div>
+                        {btnText && (
+                          <a href={btnLink} className="promo-button">
+                            {btnText}
+                          </a>
+                        )}
+                      </div>
                     </div>
+                    {promo.image && (
+                      <div className="promo-image">
+                        <img src={promo.image} alt={promo.title} />
+                      </div>
+                    )}
                   </div>
-                  {promo.image && (
-                    <div className="promo-image">
-                      <img src={promo.image} alt={promo.title} />
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -135,8 +150,16 @@ const Specials = () => {
             <div className="deals-grid">
               {activeSpecials.map((special) => {
                 const Icon = getSpecialIcon(special.type);
+                const endDate = special.endDate || special.end_date;
+                const minPurchase = special.minPurchase || special.min_purchase;
+                const hasQualifyingProducts = (special.product_ids?.length > 0) || (special.category_ids?.length > 0);
+
                 return (
-                  <div key={special.id} className="deal-card">
+                  <Link
+                    key={special.id}
+                    to={`/specials/${special.id}`}
+                    className="deal-card deal-card-link"
+                  >
                     <div className="deal-icon">
                       <Icon size={28} />
                     </div>
@@ -146,20 +169,26 @@ const Specials = () => {
                     <div className="deal-meta">
                       <div className="deal-date">
                         <Clock size={14} />
-                        <span>Ends {formatDate(special.endDate)}</span>
+                        <span>Ends {formatDate(endDate)}</span>
                       </div>
                       {special.code && (
                         <div className="deal-code">
                           <span>Code: <strong>{special.code}</strong></span>
                         </div>
                       )}
-                      {special.minPurchase && (
+                      {minPurchase && (
                         <div className="deal-min">
-                          Min. purchase: ${special.minPurchase}
+                          Min. purchase: ${minPurchase}
                         </div>
                       )}
                     </div>
-                  </div>
+                    {hasQualifyingProducts && (
+                      <div className="deal-cta">
+                        <span>Shop qualifying items</span>
+                        <ArrowRight size={16} />
+                      </div>
+                    )}
+                  </Link>
                 );
               })}
             </div>
@@ -177,8 +206,6 @@ const Specials = () => {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onViewDetails={() => {}}
-                  onAddToCart={() => {}}
                 />
               ))}
             </div>

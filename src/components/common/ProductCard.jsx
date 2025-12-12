@@ -152,9 +152,9 @@ const ProductCard = ({
             </span>
           )}
         </div>
-        {product.allergens && product.allergens.length > 0 && (
+        {product.allergens && (Array.isArray(product.allergens) ? product.allergens.length > 0 : product.allergens) && (
           <div className="product-card-allergens">
-            {product.allergens.slice(0, 3).map((allergen) => (
+            {(Array.isArray(product.allergens) ? product.allergens : product.allergens.split(',').map(a => a.trim())).slice(0, 3).map((allergen) => (
               <span key={allergen} className="allergen-tag">
                 {allergen}
               </span>

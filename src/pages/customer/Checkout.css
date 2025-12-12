@@ -639,3 +639,63 @@
 .summary-row.discount {
   color: var(--color-success, #10b981);
 }
+
+/* Free items from promo */
+.promo-free-items {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-success-bg, #ecfdf5);
+  border-radius: 6px;
+}
+
+.free-items-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.free-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding: 0.25rem 0;
+}
+
+.free-badge {
+  background-color: var(--color-success, #10b981);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* Promo needs more items */
+.promo-needs-more {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+}
+
+.promo-needs-more p {
+  font-size: 0.85rem;
+  color: #92400e;
+  margin: 0 0 0.5rem;
+}
+
+.promo-add-more-link {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #d97706;
+  text-decoration: none;
+}
+
+.promo-add-more-link:hover {
+  text-decoration: underline;
+}

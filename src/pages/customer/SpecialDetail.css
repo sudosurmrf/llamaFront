@@ -1,0 +1,399 @@
+.special-detail-page {
+  min-height: calc(100vh - 200px);
+  padding: 2rem 0 4rem;
+  background-color: #faf8f5;
+}
+
+.special-detail-page .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Breadcrumb */
+.special-detail-page .breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #7a5240;
+  margin-bottom: 2rem;
+}
+
+.special-detail-page .breadcrumb a {
+  color: #7a5240;
+  text-decoration: none;
+}
+
+.special-detail-page .breadcrumb a:hover {
+  color: #5c3d2e;
+  text-decoration: underline;
+}
+
+.special-detail-page .breadcrumb .current {
+  color: #5c3d2e;
+  font-weight: 500;
+}
+
+/* Not Found */
+.special-not-found {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.special-not-found svg {
+  color: #7a5240;
+  opacity: 0.5;
+  margin-bottom: 1.5rem;
+}
+
+.special-not-found h1 {
+  font-size: 1.75rem;
+  color: #5c3d2e;
+  margin: 0 0 0.75rem;
+}
+
+.special-not-found p {
+  color: #7a5240;
+  margin: 0 0 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-back-to-specials {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary, #8b4513);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-back-to-specials:hover {
+  background-color: #723a0f;
+}
+
+/* Special Header */
+.special-header {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 3rem;
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.08);
+  margin-bottom: 3rem;
+}
+
+.special-header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.special-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #f8e8d4;
+  color: #5c3d2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.special-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #dc2626;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 24px;
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+
+.special-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #5c3d2e;
+  margin: 0 0 1rem;
+}
+
+.special-description {
+  font-size: 1.125rem;
+  color: #7a5240;
+  line-height: 1.7;
+  margin: 0 0 1.5rem;
+}
+
+.special-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.special-expires {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #7a5240;
+}
+
+.special-code-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.code-label {
+  font-size: 0.875rem;
+  color: #7a5240;
+}
+
+.special-code {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: #fef3c7;
+  border: 2px dashed #f59e0b;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #92400e;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.special-code:hover {
+  background-color: #fde68a;
+}
+
+.special-code svg {
+  color: #92400e;
+}
+
+.copied-msg {
+  font-size: 0.8125rem;
+  color: #22c55e;
+  font-weight: 500;
+}
+
+/* Progress Section */
+.special-progress {
+  background-color: #faf8f5;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: auto;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.progress-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.progress-count {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #5c3d2e;
+}
+
+.progress-bar {
+  height: 12px;
+  background-color: #e5ddd6;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #22c55e);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progress-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #7a5240;
+  margin: 0;
+}
+
+.progress-message.success {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.go-to-checkout-btn {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+/* Special Header Image */
+.special-header-image {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.special-header-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Section Title */
+.special-detail-page .section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #5c3d2e;
+  margin: 0 0 2rem;
+}
+
+/* Products Grid */
+.qualifying-products .products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.no-products {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+}
+
+.no-products svg {
+  color: #7a5240;
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.no-products p {
+  color: #7a5240;
+  margin: 0 0 1.5rem;
+}
+
+/* Cart Summary */
+.special-cart-summary {
+  margin-top: 3rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.08);
+}
+
+.special-cart-summary h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  color: #5c3d2e;
+  margin: 0 0 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0e6dc;
+}
+
+.cart-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.cart-item-qty {
+  color: #7a5240;
+  min-width: 32px;
+}
+
+.cart-item-name {
+  flex: 1;
+  color: #5c3d2e;
+}
+
+.cart-item-price {
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.cart-summary-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f0e6dc;
+}
+
+.cart-summary-footer span {
+  font-size: 0.9375rem;
+  color: #7a5240;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .special-header {
+    grid-template-columns: 1fr;
+  }
+
+  .special-header-image {
+    max-height: 300px;
+  }
+
+  .qualifying-products .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .special-header {
+    padding: 1.5rem;
+  }
+
+  .special-title {
+    font-size: 1.5rem;
+  }
+
+  .special-description {
+    font-size: 1rem;
+  }
+
+  .qualifying-products .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary-footer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}

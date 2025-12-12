@@ -8,7 +8,7 @@ import CartDrawer from './components/common/CartDrawer';
 
 // Customer Layout & Pages
 import { CustomerLayout } from './components/customer';
-import { Home, Menu, About, Contact, Specials, Login, Register, Account } from './pages/customer';
+import { Home, Menu, About, Contact, Specials, SpecialDetail, Login, Register, Account } from './pages/customer';
 import Checkout from './pages/customer/Checkout';
 import OrderConfirmation from './pages/customer/OrderConfirmation';
 import ProductDetail from './pages/customer/ProductDetail';
@@ -46,6 +46,7 @@ function App() {
                   <Route index element={<Home />} />
                   <Route path="menu" element={<Menu />} />
                   <Route path="specials" element={<Specials />} />
+                  <Route path="specials/:id" element={<SpecialDetail />} />
                   <Route path="about" element={<About />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="checkout" element={<Checkout />} />

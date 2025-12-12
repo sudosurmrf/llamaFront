@@ -213,6 +213,38 @@
   font-style: italic;
 }
 
+.deal-card-link {
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.deal-card-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(92, 61, 46, 0.15);
+}
+
+.deal-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0e6dc;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary, #8b4513);
+}
+
+.deal-cta svg {
+  transition: transform 0.2s;
+}
+
+.deal-card-link:hover .deal-cta svg {
+  transform: translateX(4px);
+}
+
 /* Special Products */
 .special-products-section {
   padding: 4rem 0;

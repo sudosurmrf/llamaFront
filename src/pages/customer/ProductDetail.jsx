@@ -168,11 +168,11 @@ const ProductDetail = () => {
             <p className="product-description">{product.description}</p>
 
             {/* Allergens */}
-            {product.allergens && product.allergens.length > 0 && (
+            {product.allergens && (Array.isArray(product.allergens) ? product.allergens.length > 0 : product.allergens) && (
               <div className="product-allergens">
                 <h4>Allergens:</h4>
                 <div className="allergen-tags">
-                  {product.allergens.map((allergen) => (
+                  {(Array.isArray(product.allergens) ? product.allergens : product.allergens.split(',').map(a => a.trim())).map((allergen) => (
                     <span key={allergen} className="allergen-tag">
                       {allergen}
                     </span>
@@ -182,10 +182,10 @@ const ProductDetail = () => {
             )}
 
             {/* Ingredients */}
-            {product.ingredients && product.ingredients.length > 0 && (
+            {product.ingredients && (
               <div className="product-ingredients">
                 <h4>Ingredients:</h4>
-                <p>{product.ingredients.join(', ')}</p>
+                <p>{Array.isArray(product.ingredients) ? product.ingredients.join(', ') : product.ingredients}</p>
               </div>
             )}
 

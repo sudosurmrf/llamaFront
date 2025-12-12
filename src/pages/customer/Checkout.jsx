@@ -52,6 +52,8 @@ const Checkout = () => {
   const [promoError, setPromoError] = useState('');
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [discount, setDiscount] = useState(0);
+  const [freeItems, setFreeItems] = useState([]);
+  const [promoNeedsMoreItems, setPromoNeedsMoreItems] = useState(null);
 
   // Apply promo code
   const handleApplyPromo = async () => {
@@ -59,6 +61,7 @@ const Checkout = () => {
 
     setPromoLoading(true);
     setPromoError('');
+    setPromoNeedsMoreItems(null);
 
     try {
       const response = await fetch(
@@ -69,21 +72,35 @@ const Checkout = () => {
           body: JSON.stringify({
             code: promoCode.trim().toUpperCase(),
             subtotal: subtotal,
-            items: items.map((item) => ({ id: item.id, quantity: item.quantity })),
+            items: items.map((item) => ({ id: item.id, quantity: item.quantity, price: item.price })),
           }),
         }
       );
 
       const data = await response.json();
 
-      if (response.ok && data.valid) {
+      if (data.valid) {
         setAppliedPromo(data.special);
         setDiscount(data.discount);
+        setFreeItems(data.freeItems || []);
         setPromoError('');
+        setPromoNeedsMoreItems(null);
+      } else if (data.requiresMoreItems) {
+        // Special case: promo is valid but needs more items
+        setPromoNeedsMoreItems({
+          special: data.special,
+          itemsNeeded: data.itemsNeeded,
+          qualifyingProducts: data.qualifyingProducts,
+        });
+        setPromoError(data.error);
+        setAppliedPromo(null);
+        setDiscount(0);
+        setFreeItems([]);
       } else {
         setPromoError(data.error || 'Invalid promo code');
         setAppliedPromo(null);
         setDiscount(0);
+        setFreeItems([]);
       }
     } catch (error) {
       console.error('Promo code error:', error);
@@ -97,8 +114,10 @@ const Checkout = () => {
   const handleRemovePromo = () => {
     setAppliedPromo(null);
     setDiscount(0);
+    setFreeItems([]);
     setPromoCode('');
     setPromoError('');
+    setPromoNeedsMoreItems(null);
   };
 
   // Pre-fill form with user data if logged in
@@ -609,19 +628,32 @@ const Checkout = () => {
               <div className="promo-code-section">
                 <h4><Tag size={16} /> Promo Code</h4>
                 {appliedPromo ? (
-                  <div className="promo-applied">
-                    <div className="promo-applied-info">
-                      <Check size={16} />
-                      <span>{appliedPromo.code || appliedPromo.name}</span>
+                  <>
+                    <div className="promo-applied">
+                      <div className="promo-applied-info">
+                        <Check size={16} />
+                        <span>{appliedPromo.code || appliedPromo.name}</span>
+                      </div>
+                      <button
+                        className="promo-remove-btn"
+                        onClick={handleRemovePromo}
+                        title="Remove promo code"
+                      >
+                        <X size={16} />
+                      </button>
                     </div>
-                    <button
-                      className="promo-remove-btn"
-                      onClick={handleRemovePromo}
-                      title="Remove promo code"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
+                    {freeItems.length > 0 && (
+                      <div className="promo-free-items">
+                        <span className="free-items-label">Free items included:</span>
+                        {freeItems.map((item, idx) => (
+                          <div key={idx} className="free-item">
+                            <span>{item.quantity}x {item.name}</span>
+                            <span className="free-badge">FREE</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="promo-input-wrapper">
                     <input
@@ -642,6 +674,16 @@ const Checkout = () => {
                   </div>
                 )}
                 {promoError && <p className="promo-error">{promoError}</p>}
+                {promoNeedsMoreItems && (
+                  <div className="promo-needs-more">
+                    <p>
+                      Buy {promoNeedsMoreItems.special.buyQuantity}, get {promoNeedsMoreItems.special.getQuantity} free!
+                    </p>
+                    <Link to={`/specials/${promoNeedsMoreItems.special.id}`} className="promo-add-more-link">
+                      Add qualifying items →
+                    </Link>
+                  </div>
+                )}
               </div>
 
               <div className="summary-totals">
