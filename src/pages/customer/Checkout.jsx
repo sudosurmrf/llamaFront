@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingBag, CreditCard, Truck, ArrowLeft, Lock, Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import './Checkout.css';
@@ -19,6 +20,7 @@ const Checkout = () => {
     removeFromCart,
     clearCart,
   } = useCart();
+  const { user, isAuthenticated } = useAuth();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(1); // 1: Review, 2: Details, 3: Payment
@@ -43,6 +45,19 @@ const Checkout = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  // Pre-fill form with user data if logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+        firstName: user.firstName || prev.firstName,
+        lastName: user.lastName || prev.lastName,
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,6 +141,10 @@ const Checkout = () => {
             email: formData.email,
             phone: formData.phone,
             orderType: formData.orderType,
+            customerId: isAuthenticated && user ? user.id : null,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            name: `${formData.firstName} ${formData.lastName}`.trim() || user?.firstName && `${user.firstName} ${user.lastName}`.trim(),
             ...(formData.orderType === 'pickup'
               ? {
                   pickupDate: formData.pickupDate,

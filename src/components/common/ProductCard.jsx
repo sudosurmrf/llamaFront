@@ -1,26 +1,29 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, Eye, Plus, Minus, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import './ProductCard.css';
 
 const ProductCard = ({
   product,
   onViewDetails,
-  onToggleFavorite,
   showQuickActions = true,
   className = '',
 }) => {
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showAddedFeedback, setShowAddedFeedback] = useState(false);
 
   const { addToCart, isInCart, getItemQuantity, incrementQuantity, decrementQuantity } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
+
+  const favorite = isFavorite(product.id);
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
-    onToggleFavorite?.(product, !isFavorite);
+    toggleFavorite(product);
   };
 
   const handleAddToCart = (e) => {
@@ -41,7 +44,11 @@ const ProductCard = ({
   };
 
   const handleViewDetails = () => {
-    onViewDetails?.(product);
+    if (onViewDetails) {
+      onViewDetails(product);
+    } else {
+      navigate(`/product/${product.id}`);
+    }
   };
 
   const formatPrice = (price) => {
@@ -90,11 +97,11 @@ const ProductCard = ({
         {showQuickActions && (
           <div className={`product-card-actions ${isHovered ? 'visible' : ''}`}>
             <button
-              className={`action-btn favorite-btn ${isFavorite ? 'active' : ''}`}
+              className={`action-btn favorite-btn ${favorite ? 'active' : ''}`}
               onClick={handleFavoriteClick}
-              title="Add to favorites"
+              title={favorite ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+              <Heart size={18} fill={favorite ? 'currentColor' : 'none'} />
             </button>
             <button
               className="action-btn view-btn"

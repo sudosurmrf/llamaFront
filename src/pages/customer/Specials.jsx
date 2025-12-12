@@ -20,15 +20,31 @@ const Specials = () => {
   };
 
   const getSpecialLabel = (special) => {
+    // Handle value being either a primitive or an object (from JSONB)
+    const value = special.value;
+
     switch (special.type) {
       case 'discount_percentage':
-        return `${special.value}% OFF`;
+        // value is a number (e.g., 20 for 20% off)
+        return `${typeof value === 'object' ? value.percentage || value : value}% OFF`;
       case 'buy_x_get_y':
-        return `Buy ${special.value.buyQuantity}, Get ${special.value.getQuantity} Free`;
+        // value is { buyQuantity, getQuantity }
+        if (typeof value === 'object' && value.buyQuantity && value.getQuantity) {
+          return `Buy ${value.buyQuantity}, Get ${value.getQuantity} Free`;
+        }
+        return 'Buy More, Get Free';
       case 'bundle_discount':
-        return `$${special.value} OFF Bundle`;
+        // value is { freeItem, freeQuantity, minPurchase } or a discount amount
+        if (typeof value === 'object') {
+          if (value.freeItem) {
+            return `Free ${value.freeQuantity || ''} ${value.freeItem}`;
+          }
+          return `$${value.discount || value.amount || 0} OFF Bundle`;
+        }
+        return `$${value} OFF Bundle`;
       case 'fixed_price':
-        return `Special Price: $${special.value}`;
+        // value is a number (the special price)
+        return `Special Price: $${typeof value === 'object' ? value.price || value : value}`;
       default:
         return 'Special Offer';
     }

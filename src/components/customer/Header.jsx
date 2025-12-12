@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, LogIn } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { itemCount, toggleCart } = useCart();
+  const { isAuthenticated, user } = useAuth();
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -31,7 +33,7 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="header-logo">
-          <span className="logo-icon">🦙</span>
+          <span className="logo-icon"><img className="logo-icon" style={{"width": "50px"}}src="./llamaTreats2.png" /></span>
           <span className="logo-text">
             <span className="logo-name">Llama Treats</span>
             <span className="logo-tagline">Bakery</span>
@@ -65,9 +67,24 @@ const Header = () => {
               <span className="cart-badge">{itemCount > 99 ? '99+' : itemCount}</span>
             )}
           </button>
-          <Link to="/admin" className="header-action-btn" aria-label="Admin panel">
-            <User size={22} />
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              to="/account"
+              className="header-action-btn account-btn"
+              aria-label="My account"
+              title={`${user?.firstName}'s account`}
+            >
+              <User size={22} />
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="header-action-btn login-btn"
+              aria-label="Sign in"
+            >
+              <LogIn size={22} />
+            </Link>
+          )}
           <button
             className="mobile-menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

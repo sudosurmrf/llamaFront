@@ -152,9 +152,7 @@ const Home = () => {
         <div className="container">
           <div className="story-grid">
             <div className="story-images">
-              <div className="story-image-placeholder">
-                <span>🦙</span>
-              </div>
+                <img className="story-image-placeholder" src="./llamaTreats.png" />
             </div>
             <div className="story-content">
               <h2 className="section-title">Our Story</h2>

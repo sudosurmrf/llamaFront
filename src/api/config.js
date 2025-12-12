@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 export const S3_BASE_URL = import.meta.env.VITE_S3_URL || 'https://llama-bakery-images.s3.us-east-1.amazonaws.com';
 
 // API endpoints

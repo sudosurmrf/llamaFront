@@ -75,11 +75,7 @@ const About = () => {
                 traditional techniques, and always bake with love.
               </p>
             </div>
-            <div className="story-image">
-              <div className="image-placeholder">
-                <span>🦙</span>
-              </div>
-            </div>
+            <img className="image-placeholder" style={{"border-radius":"50px"}}src="./llamaTreats.png" />
           </div>
         </div>
       </section>

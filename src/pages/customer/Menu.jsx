@@ -1,16 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, SlidersHorizontal, X, Heart } from 'lucide-react';
 import { ProductCard, Loading } from '../../components/common';
 import { useBakery } from '../../context/BakeryContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import './Menu.css';
 
 const Menu = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { products, categories, loading } = useBakery();
+  const { favorites, favoriteCount } = useFavorites();
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('name');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   const selectedCategory = searchParams.get('category') || 'all';
 
@@ -26,6 +30,12 @@ const Menu = () => {
   // Filter and sort products
   const filteredProducts = useMemo(() => {
     let result = [...products].filter((p) => p.active);
+
+    // Filter by favorites
+    if (showFavoritesOnly) {
+      const favoriteIds = favorites.map((f) => f.id);
+      result = result.filter((p) => favoriteIds.includes(p.id));
+    }
 
     // Filter by category
     if (selectedCategory !== 'all') {
@@ -51,10 +61,10 @@ const Menu = () => {
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case 'price-low':
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
         break;
       case 'price-high':
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
         break;
       case 'newest':
         result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -64,7 +74,7 @@ const Menu = () => {
     }
 
     return result;
-  }, [products, categories, selectedCategory, searchTerm, sortBy]);
+  }, [products, categories, selectedCategory, searchTerm, sortBy, showFavoritesOnly, favorites]);
 
   const activeCategories = categories.filter((c) => c.active);
 
@@ -97,13 +107,27 @@ const Menu = () => {
               </button>
             </div>
 
+            {/* Favorites Filter */}
+            {favoriteCount > 0 && (
+              <div className="filter-section">
+                <button
+                  className={`favorites-filter-btn ${showFavoritesOnly ? 'active' : ''}`}
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                >
+                  <Heart size={18} fill={showFavoritesOnly ? 'currentColor' : 'none'} />
+                  <span>My Favorites</span>
+                  <span className="favorites-count">{favoriteCount}</span>
+                </button>
+              </div>
+            )}
+
             <div className="filter-section">
               <h4 className="filter-title">Categories</h4>
               <ul className="category-list">
                 <li>
                   <button
-                    className={`category-btn ${selectedCategory === 'all' ? 'active' : ''}`}
-                    onClick={() => handleCategoryChange('all')}
+                    className={`category-btn ${selectedCategory === 'all' && !showFavoritesOnly ? 'active' : ''}`}
+                    onClick={() => { handleCategoryChange('all'); setShowFavoritesOnly(false); }}
                   >
                     All Items
                   </button>
@@ -111,8 +135,8 @@ const Menu = () => {
                 {activeCategories.map((category) => (
                   <li key={category.id}>
                     <button
-                      className={`category-btn ${selectedCategory === category.slug ? 'active' : ''}`}
-                      onClick={() => handleCategoryChange(category.slug)}
+                      className={`category-btn ${selectedCategory === category.slug && !showFavoritesOnly ? 'active' : ''}`}
+                      onClick={() => { handleCategoryChange(category.slug); setShowFavoritesOnly(false); }}
                     >
                       {category.name}
                     </button>
@@ -171,7 +195,8 @@ const Menu = () => {
               <span>
                 Showing {filteredProducts.length}{' '}
                 {filteredProducts.length === 1 ? 'item' : 'items'}
-                {selectedCategory !== 'all' && (
+                {showFavoritesOnly && <> in <strong>Favorites</strong></>}
+                {selectedCategory !== 'all' && !showFavoritesOnly && (
                   <> in <strong>{activeCategories.find(c => c.slug === selectedCategory)?.name}</strong></>
                 )}
               </span>
@@ -184,15 +209,23 @@ const Menu = () => {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onViewDetails={() => {}}
-                    onAddToCart={() => {}}
                   />
                 ))}
               </div>
             ) : (
               <div className="no-results">
-                <h3>No items found</h3>
-                <p>Try adjusting your search or filters to find what you're looking for.</p>
+                {showFavoritesOnly ? (
+                  <>
+                    <Heart size={48} />
+                    <h3>No favorites yet</h3>
+                    <p>Click the heart icon on any product to add it to your favorites.</p>
+                  </>
+                ) : (
+                  <>
+                    <h3>No items found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                  </>
+                )}
               </div>
             )}
           </div>

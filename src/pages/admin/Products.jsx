@@ -52,7 +52,7 @@ const Products = () => {
     {
       header: 'Price',
       accessor: 'price',
-      render: (row) => <span className="price">${row.price.toFixed(2)}</span>,
+      render: (row) => <span className="price">${parseFloat(row.price).toFixed(2)}</span>,
       width: '100px',
     },
     {

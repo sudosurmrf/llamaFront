@@ -48,7 +48,9 @@ const AdminLayout = () => {
       <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <Link to="/admin" className="sidebar-logo">
-            <span className="logo-icon">🦙</span>
+            <span className="logo-icon">
+              <img className="logo-icon" style={{"width": "50px"}} src="./llamaTreats2.png" />
+            </span>
             <span className="logo-text">Llama Treats</span>
           </Link>
           <button

@@ -8,3 +8,4 @@ export { default as Promotions } from './Promotions';
 export { default as PromotionForm } from './PromotionForm';
 export { default as Banners } from './Banners';
 export { default as Settings } from './Settings';
+export { default as AdminLogin } from './AdminLogin';

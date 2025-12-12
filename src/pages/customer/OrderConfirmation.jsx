@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, Package, MapPin, Clock, ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import './OrderConfirmation.css';
 
@@ -9,9 +10,58 @@ const OrderConfirmation = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { clearCart } = useCart();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [confirmationError, setConfirmationError] = useState(null);
+  const orderConfirmedRef = useRef(false);
 
   const sessionId = searchParams.get('session_id');
   const success = searchParams.get('success');
+
+  // Confirm order in database after successful Stripe payment
+  useEffect(() => {
+    const confirmOrder = async () => {
+      // Wait for auth to finish loading and prevent duplicate calls
+      if (authLoading || orderConfirmedRef.current) {
+        return;
+      }
+
+      if (success === 'true' && sessionId) {
+        orderConfirmedRef.current = true; // Mark as attempted
+
+        try {
+          const response = await fetch(
+            `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/checkout/confirm-order`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                sessionId,
+                customerId: isAuthenticated && user ? user.id : null,
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.ok) {
+            setOrderDetails(data.order);
+          } else {
+            console.error('Failed to confirm order:', data.error);
+            setConfirmationError(data.error);
+          }
+        } catch (error) {
+          console.error('Error confirming order:', error);
+          setConfirmationError('Failed to save order details');
+          orderConfirmedRef.current = false; // Allow retry on error
+        }
+      }
+    };
+
+    confirmOrder();
+  }, [success, sessionId, isAuthenticated, user, authLoading]);
 
   useEffect(() => {
     // Clear cart after successful payment
@@ -64,10 +114,10 @@ const OrderConfirmation = () => {
             Thank you for your order! We've sent a confirmation email with your order details.
           </p>
 
-          {sessionId && (
+          {(orderDetails || sessionId) && (
             <div className="order-number">
-              <span>Order Reference:</span>
-              <strong>{sessionId.slice(-8).toUpperCase()}</strong>
+              <span>Order Number:</span>
+              <strong>{orderDetails?.orderNumber || sessionId.slice(-8).toUpperCase()}</strong>
             </div>
           )}
 
@@ -111,9 +161,15 @@ const OrderConfirmation = () => {
               Order More Treats
               <ArrowRight size={18} />
             </Button>
-            <Link to="/" className="continue-link">
-              Return to Home
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/account" className="continue-link">
+                View Your Orders
+              </Link>
+            ) : (
+              <Link to="/" className="continue-link">
+                Return to Home
+              </Link>
+            )}
           </div>
         </div>
       </div>

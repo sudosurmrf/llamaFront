@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="footer-grid">
           <div className="footer-section footer-about">
             <div className="footer-logo">
-              <span className="logo-icon">🦙</span>
+              <span className="logo-icon"><img src="./llamaTreats.png" /></span>
               <span className="logo-text">Llama Treats Bakery</span>
             </div>
             <p className="footer-description">
