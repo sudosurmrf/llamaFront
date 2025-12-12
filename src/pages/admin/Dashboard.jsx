@@ -136,7 +136,7 @@ console.log('product here', recentProducts)
                 <div className="item-info">
                   <span className="item-name">{product.name}</span>
                   <span className="item-category">
-                    {categories.find(c => c.id === product.categoryId)?.name || 'Uncategorized'}
+                    {categories.find(c => c.id === (product.categoryId || product.category_id))?.name || 'Uncategorized'}
                   </span>
                 </div>
                 <span className="item-price">${parseFloat(product.price).toFixed(2)}</span>

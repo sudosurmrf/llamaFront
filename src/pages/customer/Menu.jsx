@@ -37,11 +37,14 @@ const Menu = () => {
       result = result.filter((p) => favoriteIds.includes(p.id));
     }
 
-    // Filter by category
+    // Filter by category (handle both camelCase and snake_case from backend)
     if (selectedCategory !== 'all') {
       const category = categories.find((c) => c.slug === selectedCategory);
       if (category) {
-        result = result.filter((p) => p.categoryId === category.id);
+        result = result.filter((p) => {
+          const productCategoryId = p.categoryId || p.category_id;
+          return productCategoryId === category.id;
+        });
       }
     }
 

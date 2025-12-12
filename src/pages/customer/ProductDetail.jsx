@@ -27,7 +27,9 @@ const ProductDetail = () => {
   const [showAddedFeedback, setShowAddedFeedback] = useState(false);
 
   const product = products.find((p) => p.id === parseInt(id));
-  const category = product ? categories.find((c) => c.id === product.categoryId) : null;
+  // Handle both camelCase and snake_case from backend
+  const productCategoryId = product?.categoryId || product?.category_id;
+  const category = product ? categories.find((c) => c.id === productCategoryId) : null;
   const inCart = product ? isInCart(product.id) : false;
   const cartQuantity = product ? getItemQuantity(product.id) : 0;
   const favorite = product ? isFavorite(product.id) : false;
@@ -35,7 +37,10 @@ const ProductDetail = () => {
   // Related products (same category, excluding current)
   const relatedProducts = product
     ? products
-        .filter((p) => p.categoryId === product.categoryId && p.id !== product.id && p.active)
+        .filter((p) => {
+          const pCategoryId = p.categoryId || p.category_id;
+          return pCategoryId === productCategoryId && p.id !== product.id && p.active;
+        })
         .slice(0, 4)
     : [];
 

@@ -38,7 +38,7 @@ export const FavoritesProvider = ({ children }) => {
         price: product.price,
         images: product.images,
         description: product.description,
-        categoryId: product.categoryId,
+        categoryId: product.categoryId || product.category_id,
       }];
     });
   }, []);
@@ -59,7 +59,7 @@ export const FavoritesProvider = ({ children }) => {
         price: product.price,
         images: product.images,
         description: product.description,
-        categoryId: product.categoryId,
+        categoryId: product.categoryId || product.category_id,
       }];
     });
   }, []);

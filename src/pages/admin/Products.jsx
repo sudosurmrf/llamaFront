@@ -44,7 +44,7 @@ const Products = () => {
           </div>
           <div className="product-info">
             <span className="product-name">{row.name}</span>
-            <span className="product-category">{getCategoryName(row.categoryId)}</span>
+            <span className="product-category">{getCategoryName(row.categoryId || row.category_id)}</span>
           </div>
         </div>
       ),
