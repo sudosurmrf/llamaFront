@@ -90,6 +90,8 @@ export const CartProvider = ({ children }) => {
   // Clear cart
   const clearCart = useCallback(() => {
     setItems([]);
+    // Explicitly clear localStorage immediately (don't rely on effect)
+    localStorage.removeItem(CART_STORAGE_KEY);
   }, []);
 
   // Toggle cart visibility

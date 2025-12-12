@@ -14,6 +14,7 @@ const OrderConfirmation = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [confirmationError, setConfirmationError] = useState(null);
   const orderConfirmedRef = useRef(false);
+  const cartClearedRef = useRef(false);
 
   const sessionId = searchParams.get('session_id');
   const success = searchParams.get('success');
@@ -65,8 +66,9 @@ const OrderConfirmation = () => {
   }, [success, sessionId, isAuthenticated, user, authLoading]);
 
   useEffect(() => {
-    // Clear cart after successful payment
-    if (success === 'true') {
+    // Clear cart after successful payment (only once)
+    if (success === 'true' && !cartClearedRef.current) {
+      cartClearedRef.current = true;
       clearCart();
     }
   }, [success, clearCart]);
