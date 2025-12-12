@@ -39,12 +39,9 @@ const AdminLogin = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      const from = location.state?.from?.pathname || '/admin';
-      navigate(from, { replace: true });
-    }
+    await login(formData.email, formData.password);
+    // Navigation is handled by the useEffect watching isAuthenticated
+    // This prevents race conditions between state updates and navigation
 
     setSubmitting(false);
   };
