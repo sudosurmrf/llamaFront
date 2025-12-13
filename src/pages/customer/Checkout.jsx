@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { FreeItemsModal } from '../../components/common';
+import { API_BASE_URL } from '../../api/config';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -72,7 +73,7 @@ const Checkout = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/specials/validate-code`,
+        `${API_BASE_URL}/specials/validate-code`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -231,7 +232,7 @@ const Checkout = () => {
 
     try {
       // Call Stripe checkout endpoint
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/checkout/create-session`, {
+      const response = await fetch(`${API_BASE_URL}/checkout/create-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { API_BASE_URL } from '../api/config';
 
 const AdminAuthContext = createContext(null);
 
 const ADMIN_AUTH_STORAGE_KEY = 'llamaTreatsAdminAuth';
 const ADMIN_TOKEN_KEY = 'adminToken'; // Used by apiService
 const ADMIN_USER_KEY = 'adminUser'; // Used by apiService
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = API_BASE_URL;
 
 export const AdminAuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);

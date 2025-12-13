@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { API_BASE_URL } from '../api/config';
 
 const AuthContext = createContext(null);
 
 const AUTH_STORAGE_KEY = 'llamaTreatsAuth';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = API_BASE_URL;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);

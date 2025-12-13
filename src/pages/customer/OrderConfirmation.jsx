@@ -4,6 +4,7 @@ import { CheckCircle, Package, MapPin, Clock, ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/common/Button';
+import { API_BASE_URL } from '../../api/config';
 import './OrderConfirmation.css';
 
 const OrderConfirmation = () => {
@@ -32,7 +33,7 @@ const OrderConfirmation = () => {
 
         try {
           const response = await fetch(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/checkout/confirm-order`,
+            `${API_BASE_URL}/checkout/confirm-order`,
             {
               method: 'POST',
               headers: {

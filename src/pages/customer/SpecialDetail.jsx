@@ -15,6 +15,7 @@ import {
 import { useBakery } from '../../context/BakeryContext';
 import { useCart } from '../../context/CartContext';
 import { ProductCard, Loading, Button } from '../../components/common';
+import { API_BASE_URL } from '../../api/config';
 import './SpecialDetail.css';
 
 const SpecialDetail = () => {
@@ -34,7 +35,7 @@ const SpecialDetail = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/specials/${id}`
+          `${API_BASE_URL}/specials/${id}`
         );
         if (!response.ok) {
           throw new Error('Special not found');
