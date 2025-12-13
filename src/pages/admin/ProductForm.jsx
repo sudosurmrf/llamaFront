@@ -138,6 +138,15 @@ const ProductForm = () => {
 
     setSaving(true);
 
+    // Separate existing images (already uploaded to S3) from new files to upload
+    const existingImages = formData.images
+      .filter((img) => img.url && !img.file) // Already uploaded images have url but no file
+      .map((img) => img.url);
+
+    const newFiles = formData.images
+      .filter((img) => img.file) // New images have a file object
+      .map((img) => img.file);
+
     // Transform to snake_case for backend API
     const productData = {
       name: formData.name,
@@ -153,7 +162,7 @@ const ProductForm = () => {
         .filter(Boolean),
       ingredients: formData.ingredients,
       servings: formData.servings,
-      existingImages: formData.images.map((img) => img.url || img.preview),
+      existingImages: existingImages,
       nutrition_info: {
         calories: formData.nutritionInfo.calories ? parseInt(formData.nutritionInfo.calories) : null,
         fat: formData.nutritionInfo.fat ? parseFloat(formData.nutritionInfo.fat) : null,
@@ -164,9 +173,9 @@ const ProductForm = () => {
 
     try {
       if (isEditing) {
-        await updateProduct(parseInt(id), productData);
+        await updateProduct(parseInt(id), productData, newFiles);
       } else {
-        await createProduct(productData);
+        await createProduct(productData, newFiles);
       }
       navigate('/admin/products');
     } catch (error) {
