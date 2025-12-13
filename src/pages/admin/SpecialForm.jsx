@@ -18,6 +18,8 @@ const SpecialForm = () => {
     value: '',
     buyQuantity: '',
     getQuantity: '',
+    buyCategoryIds: [],
+    getCategoryIds: [],
     productIds: [],
     categoryIds: [],
     startDate: '',
@@ -45,6 +47,8 @@ const SpecialForm = () => {
         const maxUses = special.maxUses || special.max_uses;
         const buyQuantity = special.value?.buyQuantity || special.value?.buy_quantity;
         const getQuantity = special.value?.getQuantity || special.value?.get_quantity;
+        const buyCategoryIds = special.value?.buyCategoryIds || special.value?.buy_category_ids || [];
+        const getCategoryIds = special.value?.getCategoryIds || special.value?.get_category_ids || [];
 
         setFormData({
           name: special.name || '',
@@ -53,6 +57,8 @@ const SpecialForm = () => {
           value: special.type === 'buy_x_get_y' ? '' : special.value?.toString() || '',
           buyQuantity: special.type === 'buy_x_get_y' ? buyQuantity?.toString() || '' : '',
           getQuantity: special.type === 'buy_x_get_y' ? getQuantity?.toString() || '' : '',
+          buyCategoryIds: buyCategoryIds,
+          getCategoryIds: getCategoryIds,
           productIds: productIds || [],
           categoryIds: categoryIds || [],
           startDate: startDate?.split('T')[0] || '',
@@ -88,6 +94,13 @@ const SpecialForm = () => {
 
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
+    }
+
+    // Promo code is required for all specials
+    if (!formData.code.trim()) {
+      newErrors.code = 'Promo code is required';
+    } else if (!/^[A-Z0-9_-]+$/i.test(formData.code.trim())) {
+      newErrors.code = 'Promo code can only contain letters, numbers, hyphens, and underscores';
     }
 
     if (formData.type === 'buy_x_get_y') {
@@ -131,6 +144,8 @@ const SpecialForm = () => {
       value = {
         buy_quantity: parseInt(formData.buyQuantity),
         get_quantity: parseInt(formData.getQuantity),
+        buy_category_ids: formData.buyCategoryIds,
+        get_category_ids: formData.getCategoryIds,
       };
     } else {
       value = parseFloat(formData.value);
@@ -149,7 +164,7 @@ const SpecialForm = () => {
       active: formData.active,
       min_purchase: formData.minPurchase ? parseFloat(formData.minPurchase) : null,
       max_uses: formData.maxUses ? parseInt(formData.maxUses) : null,
-      code: formData.code || null,
+      code: formData.code.trim().toUpperCase(),
       image: formData.image?.[0]?.url || formData.image?.[0]?.preview || null,
     };
 
@@ -223,30 +238,82 @@ const SpecialForm = () => {
               />
 
               {formData.type === 'buy_x_get_y' ? (
-                <div className="form-row">
-                  <Input
-                    label="Buy Quantity"
-                    name="buyQuantity"
-                    type="number"
-                    min="1"
-                    value={formData.buyQuantity}
-                    onChange={handleChange}
-                    error={errors.buyQuantity}
-                    required
-                    placeholder="12"
-                  />
-                  <Input
-                    label="Get Free Quantity"
-                    name="getQuantity"
-                    type="number"
-                    min="1"
-                    value={formData.getQuantity}
-                    onChange={handleChange}
-                    error={errors.getQuantity}
-                    required
-                    placeholder="1"
-                  />
-                </div>
+                <>
+                  <div className="form-row">
+                    <Input
+                      label="Buy Quantity"
+                      name="buyQuantity"
+                      type="number"
+                      min="1"
+                      value={formData.buyQuantity}
+                      onChange={handleChange}
+                      error={errors.buyQuantity}
+                      required
+                      placeholder="1"
+                    />
+                    <Input
+                      label="Get Free Quantity"
+                      name="getQuantity"
+                      type="number"
+                      min="1"
+                      value={formData.getQuantity}
+                      onChange={handleChange}
+                      error={errors.getQuantity}
+                      required
+                      placeholder="6"
+                    />
+                  </div>
+
+                  <div className="form-subsection">
+                    <h3 className="subsection-title">Buy Category (required items)</h3>
+                    <p className="subsection-description">
+                      Select the category of items customers must purchase
+                    </p>
+                    <div className="checkbox-grid">
+                      {categories.map((category) => (
+                        <label key={category.id} className="checkbox-wrapper">
+                          <input
+                            type="checkbox"
+                            checked={formData.buyCategoryIds.includes(category.id)}
+                            onChange={(e) => {
+                              const newIds = e.target.checked
+                                ? [...formData.buyCategoryIds, category.id]
+                                : formData.buyCategoryIds.filter((id) => id !== category.id);
+                              setFormData((prev) => ({ ...prev, buyCategoryIds: newIds }));
+                            }}
+                            className="checkbox"
+                          />
+                          <span className="checkbox-label">{category.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="form-subsection">
+                    <h3 className="subsection-title">Get Free Category (free items)</h3>
+                    <p className="subsection-description">
+                      Select the category of items customers can get for free
+                    </p>
+                    <div className="checkbox-grid">
+                      {categories.map((category) => (
+                        <label key={category.id} className="checkbox-wrapper">
+                          <input
+                            type="checkbox"
+                            checked={formData.getCategoryIds.includes(category.id)}
+                            onChange={(e) => {
+                              const newIds = e.target.checked
+                                ? [...formData.getCategoryIds, category.id]
+                                : formData.getCategoryIds.filter((id) => id !== category.id);
+                              setFormData((prev) => ({ ...prev, getCategoryIds: newIds }));
+                            }}
+                            className="checkbox"
+                          />
+                          <span className="checkbox-label">{category.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </>
               ) : (
                 <Input
                   label={formData.type === 'discount_percentage' ? 'Percentage Off' : 'Amount'}
@@ -263,12 +330,14 @@ const SpecialForm = () => {
               )}
 
               <Input
-                label="Promo Code (optional)"
+                label="Promo Code"
                 name="code"
                 value={formData.code}
                 onChange={handleChange}
+                error={errors.code}
+                required
                 placeholder="e.g., SAVE20"
-                helperText="Leave empty if no code is required"
+                helperText="Unique code customers enter at checkout"
               />
             </div>
           </div>
