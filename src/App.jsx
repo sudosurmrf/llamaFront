@@ -9,7 +9,7 @@ import CartDrawer from './components/common/CartDrawer';
 
 // Customer Layout & Pages
 import { CustomerLayout } from './components/customer';
-import { Home, Menu, About, Contact, Specials, SpecialDetail, Login, Register, Account } from './pages/customer';
+import { Home, Menu, About, Contact, Specials, SpecialDetail, Login, Register, Account, PrivacyPolicy, TermsOfService } from './pages/customer';
 import Checkout from './pages/customer/Checkout';
 import OrderConfirmation from './pages/customer/OrderConfirmation';
 import ProductDetail from './pages/customer/ProductDetail';
@@ -51,6 +51,8 @@ function App() {
                   <Route path="specials/:id" element={<SpecialDetail />} />
                   <Route path="about" element={<About />} />
                   <Route path="contact" element={<Contact />} />
+                  <Route path="privacy" element={<PrivacyPolicy />} />
+                  <Route path="terms" element={<TermsOfService />} />
                   <Route path="checkout" element={<Checkout />} />
                   <Route path="order-confirmation" element={<OrderConfirmation />} />
                   <Route path="login" element={<Login />} />
