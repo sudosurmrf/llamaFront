@@ -66,6 +66,10 @@ const Checkout = () => {
   const isFullyDiscounted = Boolean(appliedPromo) && subtotal - discount <= 0;
   const checkoutTax = isFullyDiscounted ? 0 : tax;
   const checkoutTotal = discountedSubtotal + checkoutTax;
+  // A promo that covers the merchandise total also waives delivery.
+  const deliveryFee = formData.orderType === 'delivery' && !isFullyDiscounted ? 10 : 0;
+  const orderTotal = checkoutTotal + deliveryFee;
+  const isFreePromoOrder = isFullyDiscounted && orderTotal === 0;
 
   // Apply promo code
   const handleApplyPromo = async (freeItemSelections = null) => {
@@ -240,6 +244,16 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
+      // Stripe calculates tax from its line items. For a fully discounted promo order,
+      // send zero-priced items and no additional discount so Stripe's taxable amount is $0.
+      const checkoutItems = items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: isFreePromoOrder ? 0 : item.price,
+        quantity: item.quantity,
+        image: item.images?.[0] || null,
+      }));
+
       // Call Stripe checkout endpoint
       const response = await fetch(`${API_BASE_URL}/checkout/create-session`, {
         method: 'POST',
@@ -247,16 +261,14 @@ const Checkout = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          items: items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.images?.[0] || null,
-          })),
+          items: checkoutItems,
           // Promo code info
           promo_code: appliedPromo?.code || null,
-          discount: discount,
+          discount: isFreePromoOrder ? 0 : discount,
+          subtotal: isFreePromoOrder ? 0 : subtotal,
+          tax: isFreePromoOrder ? 0 : checkoutTax,
+          total: orderTotal,
+          is_free_promo_order: isFreePromoOrder,
           // Transform to snake_case for backend API
           customer_info: {
             email: formData.email,
@@ -612,14 +624,14 @@ const Checkout = () => {
                   </div>
                   {formData.orderType === 'delivery' && (
                     <div className="summary-row">
-                      <span>Delivery Fee</span>
-                      <span>$10.00</span>
+                      <span>{isFreePromoOrder ? 'Delivery Fee (waived)' : 'Delivery Fee'}</span>
+                      <span>{formatPrice(deliveryFee)}</span>
                     </div>
                   )}
                   <div className="summary-row total">
                     <span>Total</span>
                     <span>
-                      {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
+                      {formatPrice(orderTotal)}
                     </span>
                   </div>
                 </div>
@@ -647,7 +659,7 @@ const Checkout = () => {
                   ) : (
                     <span className="payment-methods">
                       <CreditCard size={16} />
-                      Pay {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
+                      Pay {formatPrice(orderTotal)}
                     </span>
                   )}
                 </Button>
@@ -750,14 +762,14 @@ const Checkout = () => {
                 </div>
                 {formData.orderType === 'delivery' && (
                   <div className="summary-row">
-                    <span>Delivery</span>
-                    <span>$10.00</span>
+                    <span>{isFreePromoOrder ? 'Delivery (waived)' : 'Delivery'}</span>
+                    <span>{formatPrice(deliveryFee)}</span>
                   </div>
                 )}
                 <div className="summary-row total">
                   <span>Total</span>
                   <span>
-                    {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
+                    {formatPrice(orderTotal)}
                   </span>
                 </div>
               </div>
