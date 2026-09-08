@@ -211,8 +211,14 @@ class ApiService {
 
   async createSpecial(data, file = null) {
     const formData = new FormData();
+    const { isPrivate, ...specialPayload } = data;
+    const specialData = {
+      ...specialPayload,
+      // Always send the field so omitted UI state does not leave its value ambiguous.
+      is_private: data.is_private ?? isPrivate ?? false,
+    };
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(specialData).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (typeof value === 'object' && !(value instanceof File)) {
           formData.append(key, JSON.stringify(value));
@@ -231,8 +237,14 @@ class ApiService {
 
   async updateSpecial(id, data, file = null) {
     const formData = new FormData();
+    const { isPrivate, ...specialPayload } = data;
+    const specialData = {
+      ...specialPayload,
+      // Preserve an existing value when callers pass a special returned by either API convention.
+      is_private: data.is_private ?? isPrivate ?? false,
+    };
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(specialData).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (typeof value === 'object' && !(value instanceof File)) {
           formData.append(key, JSON.stringify(value));

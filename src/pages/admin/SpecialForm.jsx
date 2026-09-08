@@ -25,6 +25,7 @@ const SpecialForm = () => {
     startDate: '',
     endDate: '',
     active: true,
+    isPrivate: false,
     minPurchase: '',
     maxUses: '',
     code: '',
@@ -64,6 +65,7 @@ const SpecialForm = () => {
           startDate: startDate?.split('T')[0] || '',
           endDate: endDate?.split('T')[0] || '',
           active: special.active !== false,
+          isPrivate: special.is_private ?? special.isPrivate ?? false,
           minPurchase: minPurchase?.toString() || '',
           maxUses: maxUses?.toString() || '',
           code: special.code || '',
@@ -162,6 +164,7 @@ const SpecialForm = () => {
       start_date: new Date(formData.startDate).toISOString(),
       end_date: new Date(formData.endDate + 'T23:59:59').toISOString(),
       active: formData.active,
+      is_private: formData.isPrivate,
       min_purchase: formData.minPurchase ? parseFloat(formData.minPurchase) : null,
       max_uses: formData.maxUses ? parseInt(formData.maxUses) : null,
       code: formData.code.trim().toUpperCase(),
@@ -376,6 +379,17 @@ const SpecialForm = () => {
                   className="checkbox"
                 />
                 <span className="checkbox-label">Active</span>
+              </label>
+
+              <label className="checkbox-wrapper">
+                <input
+                  type="checkbox"
+                  name="isPrivate"
+                  checked={formData.isPrivate}
+                  onChange={handleChange}
+                  className="checkbox"
+                />
+                <span className="checkbox-label">Private special</span>
               </label>
             </div>
           </div>
