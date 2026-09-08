@@ -15,7 +15,6 @@ const Checkout = () => {
     items,
     subtotal,
     tax,
-    total,
     itemCount,
     incrementQuantity,
     decrementQuantity,
@@ -61,6 +60,12 @@ const Checkout = () => {
   const [showFreeItemsModal, setShowFreeItemsModal] = useState(false);
   const [availableFreeProducts, setAvailableFreeProducts] = useState([]);
   const [totalFreeQty, setTotalFreeQty] = useState(0);
+
+  // Tax is based on the post-coupon subtotal when a coupon fully covers the order.
+  const discountedSubtotal = Math.max(subtotal - discount, 0);
+  const isFullyDiscounted = Boolean(appliedPromo) && subtotal - discount <= 0;
+  const checkoutTax = isFullyDiscounted ? 0 : tax;
+  const checkoutTotal = discountedSubtotal + checkoutTax;
 
   // Apply promo code
   const handleApplyPromo = async (freeItemSelections = null) => {
@@ -603,7 +608,7 @@ const Checkout = () => {
                   )}
                   <div className="summary-row">
                     <span>Tax (7%)</span>
-                    <span>{formatPrice(tax)}</span>
+                    <span>{formatPrice(checkoutTax)}</span>
                   </div>
                   {formData.orderType === 'delivery' && (
                     <div className="summary-row">
@@ -614,7 +619,7 @@ const Checkout = () => {
                   <div className="summary-row total">
                     <span>Total</span>
                     <span>
-                      {formatPrice(total - discount + (formData.orderType === 'delivery' ? 10 : 0))}
+                      {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
                     </span>
                   </div>
                 </div>
@@ -642,7 +647,7 @@ const Checkout = () => {
                   ) : (
                     <span className="payment-methods">
                       <CreditCard size={16} />
-                      Pay {formatPrice(total - discount + (formData.orderType === 'delivery' ? 10 : 0))}
+                      Pay {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
                     </span>
                   )}
                 </Button>
@@ -741,7 +746,7 @@ const Checkout = () => {
                 )}
                 <div className="summary-row">
                   <span>Tax</span>
-                  <span>{formatPrice(tax)}</span>
+                  <span>{formatPrice(checkoutTax)}</span>
                 </div>
                 {formData.orderType === 'delivery' && (
                   <div className="summary-row">
@@ -752,7 +757,7 @@ const Checkout = () => {
                 <div className="summary-row total">
                   <span>Total</span>
                   <span>
-                    {formatPrice(total - discount + (formData.orderType === 'delivery' ? 10 : 0))}
+                    {formatPrice(checkoutTotal + (formData.orderType === 'delivery' ? 10 : 0))}
                   </span>
                 </div>
               </div>
