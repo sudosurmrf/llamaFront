@@ -269,6 +269,8 @@ const Checkout = () => {
           tax: isFreePromoOrder ? 0 : checkoutTax,
           total: orderTotal,
           is_free_promo_order: isFreePromoOrder,
+          delivery_fee: deliveryFee,
+          waive_delivery_fee: isFreePromoOrder,
           // Transform to snake_case for backend API
           customer_info: {
             email: formData.email,
