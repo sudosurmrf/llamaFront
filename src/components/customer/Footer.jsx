@@ -16,17 +16,11 @@ const Footer = () => {
             </div>
             <p className="footer-description">
               Handcrafted baked goods made with love and the finest ingredients.
-              From our ovens to your table, every treat tells a story.
+              From our oven to your table, every treat tells a story.
             </p>
             <div className="footer-social">
-              <a href="#" className="social-link" aria-label="Instagram">
+              <a href="https://www.instagram.com/llamatreatsbakery" className="social-link" aria-label="Instagram">
                 <Instagram size={20} />
-              </a>
-              <a href="#" className="social-link" aria-label="Facebook">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="social-link" aria-label="Twitter">
-                <Twitter size={20} />
               </a>
             </div>
           </div>
@@ -45,11 +39,9 @@ const Footer = () => {
           <div className="footer-section">
             <h3 className="footer-title">Categories</h3>
             <ul className="footer-links">
+              <li><Link to="/menu?category=fudge">Fudge</Link></li>
               <li><Link to="/menu?category=cookies">Cookies</Link></li>
-              <li><Link to="/menu?category=cakes">Cakes</Link></li>
-              <li><Link to="/menu?category=cupcakes">Cupcakes</Link></li>
-              <li><Link to="/menu?category=pastries">Pastries</Link></li>
-              <li><Link to="/menu?category=breads">Breads</Link></li>
+              <li><Link to="/menu?category=specialty-cookies">Specialty Cookies</Link></li>
             </ul>
           </div>
 
