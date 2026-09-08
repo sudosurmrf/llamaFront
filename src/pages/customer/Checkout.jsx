@@ -271,6 +271,11 @@ const Checkout = () => {
           is_free_promo_order: isFreePromoOrder,
           delivery_fee: deliveryFee,
           waive_delivery_fee: isFreePromoOrder,
+          shipping_options: isFreePromoOrder ? [
+            {
+              shipping_rate: 'shr_1UDXJw2L74VVZ1WeXw6IfI4z', // Static ID of your $0 shipping rate
+            },
+          ] : [],
           // Transform to snake_case for backend API
           customer_info: {
             email: formData.email,
