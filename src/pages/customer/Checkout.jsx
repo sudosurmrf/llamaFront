@@ -287,7 +287,7 @@ const Checkout = () => {
           customer_info: {
             email: formData.email,
             phone: formData.phone,
-            order_type: formData.orderType,
+            order_type: isFreePromoOrder ? 'Free Delivery' : formData.orderType,
             customer_id: isAuthenticated && user ? user.id : null,
             first_name: formData.firstName,
             last_name: formData.lastName,
