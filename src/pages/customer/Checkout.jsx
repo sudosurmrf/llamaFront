@@ -256,6 +256,9 @@ const Checkout = () => {
         image: item.images?.[0] || null,
       }));
 
+      console.log(`IS FREE PROMO ORDER:`, isFreePromoOrder);
+      console.log(`ORDER TOTAL:`, orderTotal);
+
       // Call Stripe checkout endpoint
       const response = await fetch(`${API_BASE_URL}/checkout/create-session`, {
         method: 'POST',
@@ -271,7 +274,7 @@ const Checkout = () => {
           tax: isFreePromoOrder ? 0 : checkoutTax,
           total: orderTotal,
           is_free_promo_order: isFreePromoOrder,
-          delivery_fee: deliveryFee,
+          delivery_fee: isFreePromoOrder ? 0 : deliveryFee,
           waive_delivery_fee: isFreePromoOrder,
           // The checkout API should pass this through as Stripe's shipping_rate.
           shipping_rate: isFreePromoOrder ? FREE_DELIVERY_SHIPPING_RATE : null,
