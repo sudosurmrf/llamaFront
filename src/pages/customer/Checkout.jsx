@@ -9,6 +9,8 @@ import { FreeItemsModal } from '../../components/common';
 import { API_BASE_URL } from '../../api/config';
 import './Checkout.css';
 
+const FREE_DELIVERY_SHIPPING_RATE = 'shr_1UDXJw2L74VVZ1WeXw6IfI4z';
+
 const Checkout = () => {
   const navigate = useNavigate();
   const {
@@ -271,6 +273,8 @@ const Checkout = () => {
           is_free_promo_order: isFreePromoOrder,
           delivery_fee: deliveryFee,
           waive_delivery_fee: isFreePromoOrder,
+          // The checkout API should pass this through as Stripe's shipping_rate.
+          shipping_rate: isFreePromoOrder ? FREE_DELIVERY_SHIPPING_RATE : null,
           shipping_options: isFreePromoOrder ? [
             {
               shipping_rate: 'shr_1UDXJw2L74VVZ1WeXw6IfI4z', // Static ID of your $0 shipping rate
