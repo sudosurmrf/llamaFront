@@ -9,8 +9,6 @@ import { FreeItemsModal } from '../../components/common';
 import { API_BASE_URL } from '../../api/config';
 import './Checkout.css';
 
-const FREE_DELIVERY_SHIPPING_RATE = 'shr_1UDXJw2L74VVZ1WeXw6IfI4z';
-
 const Checkout = () => {
   const navigate = useNavigate();
   const {
@@ -256,9 +254,6 @@ const Checkout = () => {
         image: item.images?.[0] || null,
       }));
 
-      console.log(`IS FREE PROMO ORDER:`, isFreePromoOrder);
-      console.log(`ORDER TOTAL:`, orderTotal);
-
       // Call Stripe checkout endpoint
       const response = await fetch(`${API_BASE_URL}/checkout/create-session`, {
         method: 'POST',
@@ -273,16 +268,7 @@ const Checkout = () => {
           subtotal: isFreePromoOrder ? 0 : subtotal,
           tax: isFreePromoOrder ? 0 : checkoutTax,
           total: orderTotal,
-          is_free_promo_order: isFreePromoOrder,
-          delivery_fee: isFreePromoOrder ? 0 : deliveryFee,
-          waive_delivery_fee: isFreePromoOrder,
-          // The checkout API should pass this through as Stripe's shipping_rate.
-          shipping_rate: isFreePromoOrder ? FREE_DELIVERY_SHIPPING_RATE : null,
-          shipping_options: isFreePromoOrder ? [
-            {
-              shipping_rate: 'shr_1UDXJw2L74VVZ1WeXw6IfI4z', // Static ID of your $0 shipping rate
-            },
-          ] : [],
+
           // Transform to snake_case for backend API
           customer_info: {
             email: formData.email,
